@@ -60,7 +60,7 @@ Disponibilizar uma solução **moderna, escalável e de fácil uso**, permitindo
 ### Execução Local
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
+git clone https://github.com/FIAPGrupo20/DiarioDeClasse.git
 cd seu-repositorio
 npm install
 npm run dev

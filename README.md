@@ -124,6 +124,8 @@ docker build -t diario-de-classe .
 
 # Executa o container na porta 3000
 docker run -p 3000:3000 -d --name diario-de-classe-container diario-de-classe
+
+# Lembrando que é possível testar via requests.http mesmo rodando em container
 ```
 
 ---

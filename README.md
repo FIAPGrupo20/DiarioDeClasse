@@ -49,6 +49,33 @@ Disponibilizar uma solução **moderna, escalável e de fácil uso**, permitindo
 
 ---
 
+## 🏗️ Arquitetura
+
+O projeto segue uma arquitetura em camadas, visando desacoplamento, testabilidade e facilidade de manutenção. Cada camada tem uma responsabilidade bem definida:
+
+```
+src
+│   app.ts              # Configuração do App (Express)
+│   server.ts           # Inicialização do servidor
+└───api
+    └───controllers     # Camada de controle (Interface HTTP)
+    └───services        # Regras de negócio e validações
+    └───repositories    # Abstração da persistência de dados
+    └───models          # Definição dos modelos de dados
+└───routes              # Definição das rotas da API
+└───utils               # Utilitários (classes de erro, etc.)
+└───config              # Configurações de ambiente
+```
+
+- **Routes:** Mapeia os endpoints da API para os controllers.
+- **Controllers:** Recebem as requisições HTTP. Sua responsabilidade é extrair dados do request, chamar a camada de serviço e retornar a resposta. Não devem conter regras de negócio. Ex: PostController.
+- **Servicess:** Contêm a lógica de negócio e as validações. Por exemplo, o PostService valida se um post tem título válido antes de criar. É aqui que os erros de negócio (AppError) são lançados.
+- **Repositories:** Camada de abstração do acesso a dados. Interage diretamente com a fonte de dados (memória ou banco). Vai facilitar ter essa camada bem separada para plugar o banco. Ex: PostRepository.
+- **Models:** Define as estruturas de dados. Ex: a classe Post.
+- **Utils:** Ferramentas auxiliares, como a classe AppError para padronização de erros.
+
+---
+
 ## 🚀 Instalação e Execução
 
 ### Pré-requisitos

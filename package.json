@@ -4,7 +4,8 @@
     "description": "Backend com Node.js e Express",
     "main": "src/server.ts",
     "scripts": {
-        "start": "ts-node src/server.ts",
+        "build": "tsc",
+        "start": "node dist/server.js",
         "dev": "ts-node src/server.ts"
     },
     "keywords": [
@@ -20,7 +21,7 @@
     },
     "devDependencies": {
         "@types/express": "^5.0.6",
-        "@types/node": "^25.0.7",
+        "@types/node": "^24.10.8",
         "@typescript-eslint/eslint-plugin": "^8.53.0",
         "@typescript-eslint/parser": "^8.53.0",
         "eslint": "^9.39.2",

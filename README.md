@@ -72,6 +72,7 @@ Disponibilizar uma solução **moderna, escalável e de fácil uso**, permitindo
     ```
 
 3.  **Configure as variáveis de ambiente:** [TODO - PULAR POR ENQUANTO - AINDA RODA COM "BANCO EM MEMORIA"]
+
     Crie um arquivo `.env` na raiz do projeto e adicione as variáveis necessárias para a conexão com o banco de dados.
     ```
     # Exemplo para PostgreSQL
@@ -88,7 +89,7 @@ Disponibilizar uma solução **moderna, escalável e de fácil uso**, permitindo
     ```
     O servidor estará disponível em `http://localhost:3000`. Se você acessar no navegador verá a lista de posts pré configurada em memória.
 
-### Execução com Docker
+### Execução com Docker [TODO - AINDA NÃO ESTÁ RODANDO EM CONTAINER]
 
 ```bash
 docker build -t blog-educacao .

@@ -12,9 +12,13 @@
 # Mas depois, no estágio de PRODUCTION, vai "recomeçar  o
 # processo todo" e apenas copiar o que foi buildado. Dessa
 # forma não teria nenhum vestígio do código fonte na máquina
-# de produção (útil para segurança). Como ele também instala
+# de produção (ou de seus comentários no caso do TS <> JS) e
+# nem ferramentas de desenvolvimento. Isso reduz a possibilidade
+# de escalar privilegios em uma invasão (nao tem git para clonar
+# exploits ou npm para baixar pacotes maliciosos) e reduz a
+# chance de vazamentos (segurança). Como ele também instala
 # apenas o necessário para produção, a imagem final tende a ser
-# mais leve.
+# mais leve (ex.: sem cache npm, sem pacotes devDependencies...).
 # Esse AS builder diz que essa primeira será jogada fora ao final
 # do processo, mantendo apenas a iniciada no segundo FROM.
 FROM node:24-trixie-slim AS builder

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    /* Configurações de Módulos e Versão (Estável para Node/Express) */
+    "target": "es2020",                   /* Define a versão do ECMAScript para a qual o código será compilado */
+    "module": "commonjs",                 /* Define o sistema de módulos a ser usado (CommonJS para Node.js) */
+    "esModuleInterop": true,              /* Permite a interoperabilidade entre módulos CommonJS e ES Modules */
+    "forceConsistentCasingInFileNames": true,
+
+    /* Organização de Pastas */
+    "rootDir": "./src",                   /* Onde você vai colocar seu código */
+    "outDir": "./dist",                   /* Onde o código final vai ser gerado */
+
+    /* Qualidade e Debug */
+    "strict": true,                       /* Ativa todas as checagens de segurança */
+    "skipLibCheck": true,                 /* Ignora erros dentro de bibliotecas de terceiros */
+    "sourceMap": true,                    /* Ajuda no debug (aproveitado do seu arquivo) */
+    
+    /* Limpeza */
+    "removeComments": true                /* Remove comentários do código final compilado */
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

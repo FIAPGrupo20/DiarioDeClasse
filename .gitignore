@@ -1,0 +1,15 @@
+# Dependências (Nunca subir isso!)
+node_modules/
+
+# Build gerado pelo TypeScript
+dist/
+
+# Variáveis de ambiente (Senhas e chaves)
+.env
+
+# Arquivos de sistema do Mac/Windows
+.DS_Store
+Thumbs.db
+
+# Logs de erro
+npm-debug.log*

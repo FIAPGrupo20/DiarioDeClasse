@@ -2,10 +2,10 @@
     "name": "backend-diario",
     "version": "1.0.0",
     "description": "Backend com Node.js e Express",
-    "main": "server.js",
+    "main": "src/server.ts",
     "scripts": {
-        "start": "node server.js",
-        "dev": "node server.js"
+        "start": "ts-node src/server.ts",
+        "dev": "ts-node src/server.ts"
     },
     "keywords": [
         "express",
@@ -15,6 +15,16 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "express": "^4.18.2"
+        "express": "^4.18.2",
+        "express-async-errors": "^3.1.1"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.0.7",
+        "@typescript-eslint/eslint-plugin": "^8.53.0",
+        "@typescript-eslint/parser": "^8.53.0",
+        "eslint": "^9.39.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
     }
 }

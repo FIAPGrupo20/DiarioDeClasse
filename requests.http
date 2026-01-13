@@ -1,0 +1,106 @@
+@baseUrl = http://localhost:3000
+
+# ==========================================
+# GET /posts - Listar todos os posts
+# ==========================================
+
+### [SUCESSO] Listar todos os posts
+# Resposta esperada: 200 OK com { status: "success", total: number, posts: [...] }
+GET {{baseUrl}}/posts
+
+###
+
+# ==========================================
+# GET /posts/search?q=... - Buscar por termo
+# ==========================================
+
+### [SUCESSO] Buscar por um termo válido
+# Resposta esperada: 200 OK com { status: "success", total: number, query: "...", posts: [...] }
+GET {{baseUrl}}/posts/search?q=Node
+
+### [ERRO] Tentar buscar com termo inválido (muito curto)
+# Resposta esperada: 400 Bad Request com { status: "error", message: "..." }
+GET {{baseUrl}}/posts/search?q=a
+
+###
+
+# ==========================================
+# GET /posts/:id - Buscar post por ID
+# ==========================================
+
+### [SUCESSO] Buscar um post que existe
+# Resposta esperada: 200 OK com { status: "success", id: 1, ... }
+GET {{baseUrl}}/posts/1
+
+### [ERRO] Tentar buscar um ID que não existe
+# Resposta esperada: 404 Not Found com { status: "error", message: "Post não encontrado." }
+GET {{baseUrl}}/posts/999
+
+### [ERRO] Buscar post com ID inválido (não numérico)
+# Resposta esperada: 400 Bad Request com { status: "error", message: "ID inválido..." }
+GET {{baseUrl}}/posts/abc
+
+###
+
+# ==========================================
+# POST /posts - Criar um novo post
+# ==========================================
+
+### [SUCESSO] Criar um novo Post com dados válidos
+# Resposta esperada: 201 Created com { status: "success", id: 5, ... }
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+    "titulo": "Novo Post sobre Testes",
+    "conteudo": "Este é um conteúdo detalhado sobre como realizar testes de API.",
+    "autor": "Professor Alfredo"
+}
+
+### [ERRO] Tentar criar Post com dados inválidos
+# Resposta esperada: 422 Unprocessable Entity com { status: "error", message: "O título é obrigatório..." }
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+    "titulo": "Oi",
+    "conteudo": "",
+    "autor": "Prof"
+}
+
+###
+
+# ==========================================
+# PUT /posts/:id - Atualizar um post
+# ==========================================
+
+### [SUCESSO] Atualizar um Post existente
+# Resposta esperada: 200 OK com { status: "success", id: 2, titulo: "Título Atualizado...", ... }
+PUT {{baseUrl}}/posts/2
+Content-Type: application/json
+
+{
+    "titulo": "Título Atualizado com Sucesso",
+    "conteudo": "O conteúdo também foi modificado nesta requisição PUT."
+}
+
+### [ERRO] Tentar atualizar um post que não existe
+# Resposta esperada: 404 Not Found com { status: "error", message: "Post não encontrado." }
+PUT {{baseUrl}}/posts/999
+Content-Type: application/json
+
+{}
+
+###
+
+# ==========================================
+# DELETE /posts/:id - Deletar um post
+# ==========================================
+
+### [SUCESSO] Deletar o post de ID 3
+# Resposta esperada: 200 OK com { status: "success" }
+DELETE {{baseUrl}}/posts/3
+
+### [ERRO] Tentar deletar um post que não existe
+# Resposta esperada: 404 Not Found com { status: "error", message: "Post não encontrado." }
+DELETE {{baseUrl}}/posts/999

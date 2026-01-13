@@ -81,7 +81,7 @@ src
 ### Pré-requisitos
 
 - [Node.js](https://nodejs.org/) (versão >= 18.x)
-- [Docker](https://www.docker.com/) (Opcional, para execução em container) [TODO - AINDA NÃO ESTÁ RODANDO EM CONTAINER]
+- [Docker](https://www.docker.com/) (Opcional, para execução em container)
 - Um banco de dados (PostgreSQL ou MongoDB) instalado e configurado. [TODO - AINDA RODA COM BANCO EM MEMÓRIA]
 - (Recomendado) A extensão [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) para VS Code, para testar a API.
 
@@ -116,11 +116,14 @@ src
     ```
     O servidor estará disponível em `http://localhost:3000`. Se você acessar no navegador verá a lista de posts pré configurada em memória.
 
-### Execução com Docker [TODO - AINDA NÃO ESTÁ RODANDO EM CONTAINER]
+### Execução com Docker
 
 ```bash
-docker build -t blog-educacao .
-docker run -p 3000:3000 --env-file .env blog-educacao
+# Constrói a imagem Docker
+docker build -t diario-de-classe .
+
+# Executa o container na porta 3000
+docker run -p 3000:3000 -d --name diario-de-classe-container diario-de-classe
 ```
 
 ---

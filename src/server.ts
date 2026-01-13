@@ -1,5 +1,5 @@
-const express = require('express');
-const routes = require('./routes');
+import express, { Request, Response } from 'express';
+import routes from './routes';
 
 const app = express();
 const PORT = 3000;
@@ -13,7 +13,7 @@ app.use(routes);
 // ========== TRATAMENTO DE ERROS E ROTAS NÃO ENCONTRADAS ==========
 
 // Rota não encontrada
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
     res.status(404).json({
         sucesso: false,
         erro: 'Rota não encontrada'

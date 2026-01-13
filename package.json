@@ -2,10 +2,10 @@
     "name": "backend-diario",
     "version": "1.0.0",
     "description": "Backend com Node.js e Express",
-    "main": "server.js",
+    "main": "src/server.ts",
     "scripts": {
-        "start": "node server.js",
-        "dev": "node server.js"
+        "start": "ts-node src/server.ts",
+        "dev": "ts-node src/server.ts"
     },
     "keywords": [
         "express",

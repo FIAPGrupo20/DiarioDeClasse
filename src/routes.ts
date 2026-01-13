@@ -1,15 +1,13 @@
-const express = require('express');
+import express, { Request, Response } from 'express';
+import { posts, incrementarId, Post } from './data';
+import * as validacoes from './validacoes';
+
 const router = express.Router();
-const {
-    posts,
-    incrementarId
-} = require('./data');
-const validacoes = require('./validacoes');
 
 // ========== ENDPOINTS PARA ALUNOS (Leitura) ==========
 
 // GET /posts - Lista todos os posts (versão simples para alunos)
-router.get('/posts', (req, res) => {
+router.get('/posts', (req: Request, res: Response) => {
     const postsPublicos = posts.map(post => ({
         id: post.id,
         titulo: post.titulo,
@@ -25,11 +23,36 @@ router.get('/posts', (req, res) => {
     });
 });
 
+// GET /posts/search?q=palavra - Busca por palavra-chave
+router.get('/posts/search', (req: Request, res: Response) => {
+    const { q } = req.query;
+
+    // Validação: palavra-chave é obrigatória
+    if (!q || typeof q !== 'string' || q.trim() === '') {
+        return res.status(400).json({
+            sucesso: false,
+            erro: 'Parâmetro "q" é obrigatório para busca e deve ser uma string'
+        });
+    }
+
+    const palavraChave = q.toLowerCase();
+    const resultados = posts.filter(post =>
+        post.titulo.toLowerCase().includes(palavraChave) ||
+        post.conteudo.toLowerCase().includes(palavraChave) ||
+        post.autor.toLowerCase().includes(palavraChave)
+    );
+
+    res.status(200).json({
+        sucesso: true,
+        termo: q,
+        total: resultados.length,
+        dados: resultados
+    });
+});
+
 // GET /posts/:id - Leitura de post específico
-router.get('/posts/:id', (req, res) => {
-    const {
-        id
-    } = req.params;
+router.get('/posts/:id', (req: Request<{ id: string }>, res: Response) => {
+    const { id } = req.params;
 
     // Validação: id deve ser um número
     const validacaoId = validacoes.validarId(id);
@@ -55,44 +78,11 @@ router.get('/posts/:id', (req, res) => {
     });
 });
 
-// GET /posts/search?q=palavra - Busca por palavra-chave
-router.get('/search', (req, res) => {
-    const {
-        q
-    } = req.query;
-
-    // Validação: palavra-chave é obrigatória
-    if (!q || q.trim() === '') {
-        return res.status(400).json({
-            sucesso: false,
-            erro: 'Parâmetro "q" é obrigatório para busca'
-        });
-    }
-
-    const palavraChave = q.toLowerCase();
-    const resultados = posts.filter(post =>
-        post.titulo.toLowerCase().includes(palavraChave) ||
-        post.conteudo.toLowerCase().includes(palavraChave) ||
-        post.autor.toLowerCase().includes(palavraChave)
-    );
-
-    res.status(200).json({
-        sucesso: true,
-        termo: q,
-        total: resultados.length,
-        dados: resultados
-    });
-});
-
 // ========== ENDPOINTS PARA PROFESSORES (CRUD) ==========
 
 // POST /posts - Criação de nova postagem
-router.post('/posts', (req, res) => {
-    const {
-        titulo,
-        conteudo,
-        autor
-    } = req.body;
+router.post('/posts', (req: Request<{}, {}, Omit<Post, 'id' | 'data'>>, res: Response) => {
+    const { titulo, conteudo, autor } = req.body;
 
     // Validar todos os campos
     const validacao = validacoes.validarCamposPostCreate(titulo, conteudo, autor);
@@ -104,7 +94,7 @@ router.post('/posts', (req, res) => {
     }
 
     // Criar novo post
-    const novoPost = {
+    const novoPost: Post = {
         id: incrementarId(),
         titulo: titulo.trim(),
         conteudo: conteudo.trim(),
@@ -122,15 +112,9 @@ router.post('/posts', (req, res) => {
 });
 
 // PUT /posts/:id - Edição de post
-router.put('/posts/:id', (req, res) => {
-    const {
-        id
-    } = req.params;
-    const {
-        titulo,
-        conteudo,
-        autor
-    } = req.body;
+router.put('/posts/:id', (req: Request<{ id: string }, {}, Partial<Omit<Post, 'id' | 'data'>>>, res: Response) => {
+    const { id } = req.params;
+    const { titulo, conteudo, autor } = req.body;
 
     // Validação: id deve ser um número
     const validacaoId = validacoes.validarId(id);
@@ -192,10 +176,8 @@ router.put('/posts/:id', (req, res) => {
 });
 
 // DELETE /posts/:id - Exclusão de post
-router.delete('/posts/:id', (req, res) => {
-    const {
-        id
-    } = req.params;
+router.delete('/posts/:id', (req: Request<{ id: string }>, res: Response) => {
+    const { id } = req.params;
 
     // Validação: id deve ser um número
     const validacaoId = validacoes.validarId(id);
@@ -224,4 +206,4 @@ router.delete('/posts/:id', (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;

@@ -1,5 +1,15 @@
 // Dados em memória (simula banco de dados)
-let posts = [{
+//A interface garante que todo post tenha esse formato
+export interface Post {
+    id: number;
+    titulo: string;
+    conteudo: string;
+    autor: string;
+    data: string;
+}
+
+const posts: Post[] = [
+    {
         id: 1,
         titulo: 'Primeiro Post',
         conteudo: 'Conteúdo do primeiro post',
@@ -24,8 +34,8 @@ let posts = [{
 
 let proximoId = 4;
 
-module.exports = {
-    posts,
-    getProximoId: () => proximoId,
-    incrementarId: () => proximoId++
-};
+const getProximoId = (): number => proximoId;
+
+const incrementarId = (): number => proximoId++;
+
+export { posts, getProximoId, incrementarId };

@@ -133,12 +133,12 @@ docker run -p 3000:3000 -d --name diario-de-classe-container diario-de-classe
 ## 🧪 Testes
 O projeto possui duas formas de teste: testes automatizados e testes manuais da API.
 
-**Testes Automatizados:**
+### Testes Automatizados:
 Para rodar os testes automatizados.
 ```bash
 npm run test
 ```
-**Testes Manuais (com REST Client):**
+### Testes Manuais (com REST Client):
 Para facilitar a interação e os testes com os endpoints da API, o projeto inclui o arquivo requests.http. Recomendamos o uso da extensão REST Client para Visual Studio Code.
 1. Instale a extensão REST Client no seu VS Code.
 2. Com a aplicação em execução (local no npm run dev ou via docker com docker run), abra o arquivo requests.http.
@@ -146,6 +146,28 @@ Para facilitar a interação e os testes com os endpoints da API, o projeto incl
 4. A resposta da API será exibida em uma nova aba ao lado.
 
 Isso permite testar de forma rápida e visual todos os endpoints, incluindo casos de sucesso e de erro, conforme documentado no arquivo.
+
+### Boas Práticas para Testes
+
+Para manter a qualidade e a consistência dos testes automatizados, siga as seguintes boas práticas ao criar novos testes:
+
+1.  **Estrutura de Diretórios:**
+    Mantenha a estrutura de diretórios de `src` espelhada na pasta `tests`. Isso facilita a localização dos testes correspondentes a cada arquivo da aplicação.
+    - Exemplo: O teste para `src/api/services/PostService.ts` deve estar em `tests/api/services/PostService.test.ts`.
+
+2.  **Nomenclatura:**
+    - **Arquivos:** Nomeie os arquivos de teste com o sufixo `.test.ts` (ex: `NomeDoArquivo.test.ts`).
+    - **Descrições:** Escreva descrições claras e objetivas nos blocos `describe` (contexto) e `it` (comportamento esperado). Utilize o padrão "deve [fazer algo] quando [em tal condição]".
+
+3.  **Padrão AAA (Arrange, Act, Assert):**
+    Organize seus testes em três partes distintas para maior clareza:
+    - **Arrange:** Configure as condições iniciais, como mocks, dados de entrada e instâncias de classes.
+    - **Act:** Execute a função ou o método que está sendo testado.
+    - **Assert:** Verifique se o resultado obtido é o esperado.
+
+4.  **Independência dos Testes:**
+    Cada bloco `it` deve ser independente. A execução de um teste não deve afetar o resultado de outro. Utilize `beforeEach` para resetar o estado entre os testes.
+
 
 ---
 

@@ -1,5 +1,7 @@
 # 📚 Plataforma de Blogging para Educação Pública
 
+![CI/CD Pipeline](https://github.com/FIAPGrupo20/DiarioDeClasse//actions/workflows/main.yml/badge.svg)
+
 Este projeto propõe o desenvolvimento de uma plataforma de blogging voltada à educação pública, com o objetivo de centralizar a criação e o compartilhamento de conteúdos educacionais por professores da rede pública, facilitando o acesso dos alunos a materiais de estudo.
 
 ---
@@ -168,6 +170,26 @@ Para manter a qualidade e a consistência dos testes automatizados, siga as segu
 4.  **Independência dos Testes:**
     Cada bloco `it` deve ser independente. A execução de um teste não deve afetar o resultado de outro. Utilize `beforeEach` para resetar o estado entre os testes.
 
+---
+
+## 🔄 CI/CD e DevOps
+
+Este projeto utiliza **GitHub Actions** para automação da esteira de desenvolvimento, garantindo a qualidade do código e a entrega contínua da aplicação.
+
+### Pipeline Automatizado
+
+O fluxo de trabalho (`.github/workflows/main.yml`) é acionado em todo *push* ou *Pull Request* para a branch `main`.
+Existe cache de dependências no ambiente do runner, build otimizada com Dockerfile multi-stage e versionamento semântico no push para Docker Hub.
+
+```mermaid
+graph TD
+    A["🚀 Push / PR na Main"] -->|Gatilho| B("CI: Instalação em Ambiente Node.js<br> &<br> Testes com Jest")
+    B -->|"❌ Testes Falharam"| C["🛑 Cancela Pipeline"]
+    B -->|"✅ Testes com Sucesso"| D{"É a branch Main?"}
+    D -->|"Não"| E["🏁 Fim <br>(Apenas Validou os Testes)"]
+    D -->|"Sim"| F("CD: Build Docker Image")
+    F --> G["🐳 Push para Docker Hub"]
+```
 
 ---
 

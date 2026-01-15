@@ -1,8 +1,10 @@
-# 📚 Plataforma de Blogging para Educação Pública
+# 📚 Atividade do Curso de Full Stack Development da FIAP: Plataforma de Blogging para Educação Pública
 
 ![CI/CD Pipeline](https://github.com/FIAPGrupo20/DiarioDeClasse//actions/workflows/main.yml/badge.svg)
 
-Este projeto propõe o desenvolvimento de uma plataforma de blogging voltada à educação pública, com o objetivo de centralizar a criação e o compartilhamento de conteúdos educacionais por professores da rede pública, facilitando o acesso dos alunos a materiais de estudo.
+**_Este projeto faz parte do Tech Challenge do curso de Full Stack Development da FIAP (Turma 7FSDT), tendo objetivo puramente educacional e vinculado à conclusão das atividades do curso._**
+
+A atividade propõe o desenvolvimento de uma plataforma de blogging voltada à educação pública, com o objetivo fictício de possibilitar a criação e o compartilhamento de conteúdos educacionais por professores da rede pública, facilitando o acesso dos alunos a materiais de estudo.
 
 ---
 
@@ -53,7 +55,29 @@ Disponibilizar uma solução **moderna, escalável e de fácil uso**, permitindo
 
 ## 🏗️ Arquitetura
 
-O projeto segue uma arquitetura em camadas, visando desacoplamento, testabilidade e facilidade de manutenção. Cada camada tem uma responsabilidade bem definida:
+O projeto segue uma arquitetura em camadas (Layered Architecture), visando desacoplamento e testabilidade e facilidade de manutenção. Cada camada tem uma responsabilidade bem definida.
+
+### Fluxo de Dados
+```mermaid
+graph LR
+    Client((Cliente)) -->|HTTP Request| Controller[Controller]
+    Controller -->|Dados Validados| Service["Service<br>(Regras de Negócio)"]
+    Service -->|Chamada de Método| Repo["Repository<br>(Acesso a Dados)"]
+    Repo -->|Query| DB["Banco de Dados<br>(em memória ainda)"]
+    
+    subgraph Camada de Domínio
+    Service
+    end
+    
+    subgraph Camada de Infraestrutura
+    Repo
+    DB
+    end
+```
+
+### Estrutura de Pastas
+
+A estrutura de pastas reflete a arquitetura definida:
 
 ```
 src
@@ -71,7 +95,7 @@ src
 
 - **Routes:** Mapeia os endpoints da API para os controllers.
 - **Controllers:** Recebem as requisições HTTP. Sua responsabilidade é extrair dados do request, chamar a camada de serviço e retornar a resposta. Não devem conter regras de negócio. Ex: PostController.
-- **Servicess:** Contêm a lógica de negócio e as validações. Por exemplo, o PostService valida se um post tem título válido antes de criar. É aqui que os erros de negócio (AppError) são lançados.
+- **Services:** Contêm a lógica de negócio e as validações. Por exemplo, o PostService valida se um post tem título válido antes de criar. É aqui que os erros de negócio (AppError) são lançados.
 - **Repositories:** Camada de abstração do acesso a dados. Interage diretamente com a fonte de dados (memória ou banco). Vai facilitar ter essa camada bem separada para plugar o banco. Ex: PostRepository.
 - **Models:** Define as estruturas de dados. Ex: a classe Post.
 - **Utils:** Ferramentas auxiliares, como a classe AppError para padronização de erros.
@@ -193,12 +217,17 @@ graph TD
 
 ---
 
-## 📦 Entregáveis
 
+## FIAP
+
+### 📦 Entregáveis 
 - Código-fonte versionado no GitHub
 - Dockerfile e CI/CD
 - Documentação técnica
 - Demonstração da aplicação
+
+### Grupo
+Grupo 20
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     /* Configurações de Módulos e Versão (Estável para Node/Express) */
-    "target": "es2020",                   /* Define a versão do ECMAScript para a qual o código será compilado */
+    "target": "es2021",                   /* Define a versão do ECMAScript para a qual o código será compilado */
     "module": "commonjs",                 /* Define o sistema de módulos a ser usado (CommonJS para Node.js) */
     "esModuleInterop": true,              /* Permite a interoperabilidade entre módulos CommonJS e ES Modules */
     "forceConsistentCasingInFileNames": true,
@@ -22,6 +22,7 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ]
 }

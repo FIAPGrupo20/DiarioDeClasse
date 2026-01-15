@@ -134,14 +134,14 @@ docker run -p 3000:3000 -d --name diario-de-classe-container diario-de-classe
 O projeto possui duas formas de teste: testes automatizados e testes manuais da API.
 
 **Testes Automatizados:**
-Para rodar os testes automatizados. [TODO - AINDA NÃO EXISTEM]
+Para rodar os testes automatizados.
 ```bash
 npm run test
 ```
 **Testes Manuais (com REST Client):**
 Para facilitar a interação e os testes com os endpoints da API, o projeto inclui o arquivo requests.http. Recomendamos o uso da extensão REST Client para Visual Studio Code.
 1. Instale a extensão REST Client no seu VS Code.
-2. Com a aplicação em execução (npm run dev), abra o arquivo requests.http.
+2. Com a aplicação em execução (local no npm run dev ou via docker com docker run), abra o arquivo requests.http.
 3. Clique no texto Send Request que aparece acima de cada requisição que deseja testar.
 4. A resposta da API será exibida em uma nova aba ao lado.
 

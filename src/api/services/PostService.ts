@@ -5,8 +5,9 @@ import { AppError } from '../../utils/AppError';
 export class PostService {
     private postRepository: PostRepository;
 
-    constructor() {
-        this.postRepository = new PostRepository();
+    //Injeção de dependência para viabilizar os testes
+    constructor(postRepository: PostRepository = new PostRepository()) {
+        this.postRepository = postRepository;
     }
 
     public getAll(): { total: number; posts: Post[] } {

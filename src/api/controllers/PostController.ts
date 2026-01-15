@@ -7,38 +7,38 @@ export class PostController {
     constructor() {
         this.postService = new PostService();
     }
-    
-    public getAll = (req: Request, res: Response): void => {
-        const result = this.postService.getAll();
+
+    public getAll = async (req: Request, res: Response): Promise<void> => {
+        const result = await this.postService.getAll();
         res.status(200).json({ status: 'success', ...result });
     };
 
-    public getById = (req: Request, res: Response): void => {
+    public getById = async (req: Request, res: Response): Promise<void> => {
         const id = Number(req.params.id);
-        const post = this.postService.getById(id);
-        res.status(200).json({ status: 'success', ...post });
+        const post = await this.postService.getById(id);
+        res.status(200).json({ status: 'success', ...post.toJSON() });
     };
 
-    public create = (req: Request, res: Response): void => {
-        const newPost = this.postService.create(req.body);
-        res.status(201).json({ status: 'success', ...newPost });
+    public create = async (req: Request, res: Response): Promise<void> => {
+        const newPost = await this.postService.create(req.body);
+        res.status(201).json({ status: 'success', ...newPost.toJSON() });
     };
 
-    public update = (req: Request, res: Response): void => {
+    public update = async (req: Request, res: Response): Promise<void> => {
         const id = Number(req.params.id);
-        const updatedPost = this.postService.update(id, req.body);
-        res.status(200).json({ status: 'success', ...updatedPost });
+        const updatedPost = await this.postService.update(id, req.body);
+        res.status(200).json({ status: 'success', ...updatedPost.toJSON() });
     };
 
-    public delete = (req: Request, res: Response): void => {
+    public delete = async (req: Request, res: Response): Promise<void> => {
         const id = Number(req.params.id);
-        this.postService.delete(id);
+        await this.postService.delete(id);
         res.status(200).json({ status: 'success' });
     };
 
-    public search = (req: Request, res: Response): void => {
+    public search = async (req: Request, res: Response): Promise<void> => {
         const query = req.query.q as string || '';
-        const result = this.postService.search(query);
+        const result = await this.postService.search(query);
         res.status(200).json({ status: 'success', ...result });
     };
 }

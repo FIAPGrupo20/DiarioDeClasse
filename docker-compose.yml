@@ -1,0 +1,26 @@
+services:
+  # Serviço do Banco de Dados MongoDB
+  mongo:
+    image: mongo:6.0
+    container_name: diario-mongo
+    restart: always
+    ports:
+      - "27017:27017" # Expõe a porta para você poder conectar localmente (npm run dev)
+    volumes:
+      - mongo_data:/data/db # Persiste os dados mesmo se apagar o container
+
+  # Serviço da Aplicação (Opcional, para rodar tudo junto)
+  app:
+    build: .
+    container_name: diario-app
+    ports:
+      - "3000:3000"
+    environment:
+      # Usa a variável definida no sistema/painel, ou usa o padrão local (mongodb://mongo...) se não houver nada definido.
+      # Isso permite que em produção você apenas configure a variável de ambiente sem mudar o código.
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING:-mongodb://mongo:27017/diario_de_classe}
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:

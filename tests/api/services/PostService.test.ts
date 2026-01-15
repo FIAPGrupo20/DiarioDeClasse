@@ -28,47 +28,47 @@ describe('PostService', () => {
     });
 
     describe('create', () => {
-        it('deve criar um post com sucesso quando os dados são válidos', () => {
+        it('deve criar um post com sucesso quando os dados são válidos', async () => {
             // Arrange
-            const postData = { 
-                titulo: 'Título Válido de Teste', 
-                conteudo: 'Conteúdo com mais de 10 caracteres para teste', 
-                autor: 'Professor Teste' 
+            const postData = {
+                titulo: 'Título Válido de Teste',
+                conteudo: 'Conteúdo com mais de 10 caracteres para teste',
+                autor: 'Professor Teste'
             };
             const createdPost = { id: 1, dataCriacao: new Date(), ...postData };
-            
+
             // Configura o mock para retornar o post criado
-            // Aqui ele precisa sinalizaro ao TS que na verdade isso tem o jest dentro
-            // desse Mock e o alimenta com qual é o retorno esperado
-            (postRepositoryMock.create as jest.Mock).mockReturnValue(createdPost);
+            // Usamos mockResolvedValue porque o método create agora é async (retorna Promise)
+            (postRepositoryMock.create as jest.Mock).mockResolvedValue(createdPost);
 
             // Act
-            const result = postService.create(postData);
+            const result = await postService.create(postData);
 
             // Assert
             expect(result).toEqual(createdPost);
             expect(postRepositoryMock.create).toHaveBeenCalledWith(postData);
         });
 
-        it('deve lançar AppError se o título for muito curto', () => {
+        it('deve lançar AppError se o título for muito curto', async () => {
             //Arrange
             const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor' };
             //Act and Assert
-            expect(() => postService.create(postData)).toThrow(AppError);
+            // Como é async, usamos rejects.toThrow
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError se o autor for muito curto', () => {
+        it('deve lançar AppError se o autor for muito curto', async () => {
             //Arrange
             const postData = { titulo: 'Título Válido de Teste', conteudo: 'Conteúdo Válido', autor: 'Oi' };
             //Act and Assert
-            expect(() => postService.create(postData)).toThrow(AppError);
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError se o conteúdo for muito curto', () => {
+        it('deve lançar AppError se o conteúdo for muito curto', async () => {
             //Arrange
             const postData = { titulo: 'Título Válido de Teste', conteudo: 'Oi', autor: 'Autor' };
             //Act and Assert
-            expect(() => postService.create(postData)).toThrow(AppError);
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
     });
 });

@@ -12,7 +12,16 @@ jobs:
   test:
     # Define o runner (VM do GitHub que vai rodar o pipe) como Ubuntu
     runs-on: ubuntu-latest
-
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongo
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       # Roda um git clone do repositorio dentro do runner
       - name: Checkout do código
@@ -44,6 +53,9 @@ jobs:
       # Executa o jest através do que está configurado no packages.json como `test`
       - name: Executar Testes Unitários
         run: npm run test
+        env:
+          # No GitHub Actions, serviços mapeados em porta respondem em localhost
+          DB_CONNECTION_STRING: mongodb://localhost:27017/test_db
 
   # JOB 2: Continuous Delivery (Docker Build & Push)
   build-and-push:

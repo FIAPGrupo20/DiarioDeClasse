@@ -1,4 +1,4 @@
-import { Post } from '../models/Post';
+import { Post, IPost } from '../models/Post';
 import { PostRepository } from '../repositories/PostRepository';
 import { AppError } from '../../utils/AppError';
 
@@ -10,32 +10,33 @@ export class PostService {
         this.postRepository = postRepository;
     }
 
-    public getAll(): { total: number; posts: Post[] } {
-        const posts = this.postRepository.findAll();
+    public async getAll(): Promise<{ total: number; posts: Post[] }> {
+        const posts = await this.postRepository.findAll();
         return {
             total: posts.length,
             posts
         };
     }
 
-    public getById(id: number): Post {
+    public async getById(id: number): Promise<Post> {
         this.validarId(id);
-        const post = this.postRepository.findById(id);
+        const post = await this.postRepository.findById(id);
         if (!post) {
             throw new AppError('Post não encontrado.', 404);
         }
         return post;
     }
 
-    public create(post: Omit<Post, 'id' | 'dataCriacao'>): Post {
+    public async create(post: Omit<IPost, 'id' | 'dataCriacao'>): Promise<Post> {
         this.validarTitulo(post.titulo);
         this.validarConteudo(post.conteudo);
         this.validarAutor(post.autor);
 
-        return this.postRepository.create(post);
+        // Aqui usamos a variável 'post' que veio do parâmetro, e não 'postData'
+        return await this.postRepository.create(post);
     }
 
-    public update(id: number, data: Partial<Omit<Post, 'id' | 'dataCriacao'>>): Post {
+    public async update(id: number, data: Partial<Omit<IPost, 'id' | 'dataCriacao'>>): Promise<Post> {
         this.validarId(id);
 
         // Validações apenas se os campos forem informados
@@ -49,24 +50,30 @@ export class PostService {
             this.validarAutor(data.autor);
         }
 
-        const updatedPost = this.postRepository.update(id, data);
+        // Sanitização: Garante que apenas campos permitidos sejam enviados ao banco
+        const updateData: any = {};
+        if (data.titulo) updateData.titulo = data.titulo;
+        if (data.conteudo) updateData.conteudo = data.conteudo;
+        if (data.autor) updateData.autor = data.autor;
+
+        const updatedPost = await this.postRepository.update(id, updateData);
         if (!updatedPost) {
             throw new AppError('Post não encontrado.', 404);
         }
         return updatedPost;
     }
 
-    public delete(id: number): void {
+    public async delete(id: number): Promise<void> {
         this.validarId(id);
-        const deleted = this.postRepository.delete(id);
+        const deleted = await this.postRepository.delete(id);
         if (!deleted) {
             throw new AppError('Post não encontrado.', 404);
         }
     }
 
-    public search(query: string): { total: number; query: string; posts: Post[] } {
+    public async search(query: string): Promise<{ total: number; query: string; posts: Post[] }> {
         this.validarQuery(query);
-        const posts = this.postRepository.findByText(query);
+        const posts = await this.postRepository.findByText(query);
         return {
             total: posts.length,
             query,

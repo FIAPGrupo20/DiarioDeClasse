@@ -25,55 +25,68 @@ describe('PostService', () => {
     });
 
     describe('create', () => {
-        it('deve criar um post com sucesso quando os dados são válidos', () => {
-            const postData = { 
-                titulo: 'Título Válido de Teste', 
-                conteudo: 'Conteúdo com mais de 10 caracteres para teste', 
-                autor: 'Professor Teste' 
+        it('deve criar um post com sucesso quando os dados são válidos', async () => {
+            // Arrange
+            const postData = {
+                titulo: 'Título Válido de Teste',
+                conteudo: 'Conteúdo com mais de 10 caracteres para teste',
+                autor: 'Professor Teste'
             };
             const createdPost = { id: 1, dataCriacao: new Date(), ...postData };
-            (postRepositoryMock.create as jest.Mock).mockReturnValue(createdPost);
 
-            const result = postService.create(postData);
+            // Configura o mock para retornar o post criado
+            // Usamos mockResolvedValue porque o método create agora é async (retorna Promise)
+            (postRepositoryMock.create as jest.Mock).mockResolvedValue(createdPost);
+
+            // Act
+            const result = await postService.create(postData);
 
             expect(result).toEqual(createdPost);
             expect(postRepositoryMock.create).toHaveBeenCalledWith(postData);
         });
 
-        it('deve lançar AppError se o título for muito curto', () => {
+        it('deve lançar AppError se o título for muito curto', async () => {
+            //Arrange
             const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor' };
-            expect(() => postService.create(postData)).toThrow(AppError);
+            //Act and Assert
+            // Como é async, usamos rejects.toThrow
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError se o autor for muito curto', () => {
+        it('deve lançar AppError se o autor for muito curto', async () => {
+            //Arrange
             const postData = { titulo: 'Título Válido de Teste', conteudo: 'Conteúdo Válido', autor: 'Oi' };
-            expect(() => postService.create(postData)).toThrow(AppError);
+            //Act and Assert
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError se o conteúdo for muito curto', () => {
+        it('deve lançar AppError se o conteúdo for muito curto', async () => {
+            //Arrange
             const postData = { titulo: 'Título Válido de Teste', conteudo: 'Oi', autor: 'Autor' };
-            expect(() => postService.create(postData)).toThrow(AppError);
+            //Act and Assert
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError se o título for vazio', () => {
+        it('deve lançar AppError se o título for vazio', async () => {
+            //Arrange
             const postData = { titulo: '', conteudo: 'Conteúdo Válido', autor: 'Autor Teste' };
-            expect(() => postService.create(postData)).toThrow(AppError);
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError se o conteúdo for vazio', () => {
+        it('deve lançar AppError se o conteúdo for vazio', async () => {
             const postData = { titulo: 'Título Válido', conteudo: '', autor: 'Autor Teste' };
-            expect(() => postService.create(postData)).toThrow(AppError);
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError se o autor for vazio', () => {
+        it('deve lançar AppError se o autor for vazio', async () => {
             const postData = { titulo: 'Título Válido', conteudo: 'Conteúdo Válido', autor: '' };
-            expect(() => postService.create(postData)).toThrow(AppError);
+            await expect(postService.create(postData)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError com status 422 para validação de título', () => {
+        it('deve lançar AppError com status 422 para validação de título', async () => {
             const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor' };
             try {
-                postService.create(postData);
+                await postService.create(postData);
                 fail('Expected AppError to be thrown');
             } catch (error) {
                 expect(error).toBeInstanceOf(AppError);
@@ -83,24 +96,24 @@ describe('PostService', () => {
     });
 
     describe('getAll', () => {
-        it('deve retornar todos os posts com sucesso', () => {
+        it('deve retornar todos os posts com sucesso', async () => {
             const posts = [
                 { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() },
                 { id: 2, titulo: 'Post 2', conteudo: 'Conteúdo 2', autor: 'Autor 2', dataCriacao: new Date() }
             ];
-            (postRepositoryMock.findAll as jest.Mock).mockReturnValue(posts);
+            (postRepositoryMock.findAll as jest.Mock).mockResolvedValue(posts);
 
-            const result = postService.getAll();
+            const result = await postService.getAll();
 
             expect(result.total).toBe(2);
             expect(result.posts).toEqual(posts);
             expect(postRepositoryMock.findAll).toHaveBeenCalled();
         });
 
-        it('deve retornar lista vazia quando não há posts', () => {
-            (postRepositoryMock.findAll as jest.Mock).mockReturnValue([]);
+        it('deve retornar lista vazia quando não há posts', async () => {
+            (postRepositoryMock.findAll as jest.Mock).mockResolvedValue([]);
 
-            const result = postService.getAll();
+            const result = await postService.getAll();
 
             expect(result.total).toBe(0);
             expect(result.posts).toEqual([]);
@@ -108,27 +121,27 @@ describe('PostService', () => {
     });
 
     describe('getById', () => {
-        it('deve retornar um post por ID com sucesso', () => {
+        it('deve retornar um post por ID com sucesso', async () => {
             const post = { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() };
-            (postRepositoryMock.findById as jest.Mock).mockReturnValue(post);
+            (postRepositoryMock.findById as jest.Mock).mockResolvedValue(post);
 
-            const result = postService.getById(1);
+            const result = await postService.getById(1);
 
             expect(result).toEqual(post);
             expect(postRepositoryMock.findById).toHaveBeenCalledWith(1);
         });
 
-        it('deve lançar AppError quando post não existe', () => {
-            (postRepositoryMock.findById as jest.Mock).mockReturnValue(undefined);
+        it('deve lançar AppError quando post não existe', async () => {
+            (postRepositoryMock.findById as jest.Mock).mockResolvedValue(null);
  
-            expect(() => postService.getById(999)).toThrow(AppError);
+            await expect(postService.getById(999)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError com status 404 quando post não existe', () => {
-            (postRepositoryMock.findById as jest.Mock).mockReturnValue(undefined);
+        it('deve lançar AppError com status 404 quando post não existe', async () => {
+            (postRepositoryMock.findById as jest.Mock).mockResolvedValue(null);
  
             try {
-                postService.getById(999);
+                await postService.getById(999);
                 fail('Expected AppError to be thrown');
             } catch (error) {
                 expect(error).toBeInstanceOf(AppError);
@@ -136,52 +149,52 @@ describe('PostService', () => {
             }
         });
 
-        it('deve lançar AppError para ID inválido (zero)', () => { 
-            expect(() => postService.getById(0)).toThrow(AppError);
+        it('deve lançar AppError para ID inválido (zero)', async () => { 
+            await expect(postService.getById(0)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError para ID negativo', () => { 
-            expect(() => postService.getById(-1)).toThrow(AppError);
+        it('deve lançar AppError para ID negativo', async () => { 
+            await expect(postService.getById(-1)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError para ID NaN', () => { 
-            expect(() => postService.getById(NaN)).toThrow(AppError);
+        it('deve lançar AppError para ID NaN', async () => { 
+            await expect(postService.getById(NaN)).rejects.toThrow(AppError);
         });
     });
 
     describe('update', () => {
-        it('deve atualizar um post com sucesso', () => {
+        it('deve atualizar um post com sucesso', async () => {
             const updateData = { titulo: 'Novo Título' };
             const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() };
-            (postRepositoryMock.update as jest.Mock).mockReturnValue(updatedPost);
+            (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
 
-            const result = postService.update(1, updateData);
+            const result = await postService.update(1, updateData);
 
             expect(result).toEqual(updatedPost);
             expect(postRepositoryMock.update).toHaveBeenCalledWith(1, updateData);
         });
 
-        it('deve atualizar múltiplos campos', () => {
+        it('deve atualizar múltiplos campos', async () => {
             const updateData = { titulo: 'Novo Título', autor: 'Novo Autor' };
             const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo 1', autor: 'Novo Autor', dataCriacao: new Date() };
-            (postRepositoryMock.update as jest.Mock).mockReturnValue(updatedPost);
+            (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
 
-            const result = postService.update(1, updateData);
+            await postService.update(1, updateData);
 
             expect(postRepositoryMock.update).toHaveBeenCalledWith(1, updateData);
         });
 
-        it('deve lançar AppError quando post não existe', () => {
-            (postRepositoryMock.update as jest.Mock).mockReturnValue(null);
+        it('deve lançar AppError quando post não existe', async () => {
+            (postRepositoryMock.update as jest.Mock).mockResolvedValue(null);
  
-            expect(() => postService.update(999, { titulo: 'Novo Título' })).toThrow(AppError);
+            await expect(postService.update(999, { titulo: 'Novo Título' })).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError com status 404 quando post não existe', () => {
-            (postRepositoryMock.update as jest.Mock).mockReturnValue(null);
+        it('deve lançar AppError com status 404 quando post não existe', async () => {
+            (postRepositoryMock.update as jest.Mock).mockResolvedValue(null);
  
             try {
-                postService.update(999, { titulo: 'Novo' });
+                await postService.update(999, { titulo: 'Novo' });
                 fail('Expected AppError to be thrown');
             } catch (error) {
                 expect(error).toBeInstanceOf(AppError);
@@ -189,61 +202,60 @@ describe('PostService', () => {
             }
         });
 
-        it('deve validar título se fornecido', () => {
+        it('deve validar título se fornecido', async () => {
             const updateData = { titulo: 'AB' };
  
-            expect(() => postService.update(1, updateData)).toThrow(AppError);
+            await expect(postService.update(1, updateData)).rejects.toThrow(AppError);
         });
 
-        it('deve validar conteúdo se fornecido', () => {
+        it('deve validar conteúdo se fornecido', async () => {
             const updateData = { conteudo: 'Curto' };
  
-            expect(() => postService.update(1, updateData)).toThrow(AppError);
+            await expect(postService.update(1, updateData)).rejects.toThrow(AppError);
         });
 
-        it('deve validar autor se fornecido', () => {
+        it('deve validar autor se fornecido', async () => {
             const updateData = { autor: 'AB' };
  
-            expect(() => postService.update(1, updateData)).toThrow(AppError);
+            await expect(postService.update(1, updateData)).rejects.toThrow(AppError);
         });
 
-        it('deve permitir atualização parcial sem validar campos não informados', () => {
+        it('deve permitir atualização parcial sem validar campos não informados', async () => {
             const updateData = { titulo: 'Novo Título' };
             const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo', autor: 'Autor', dataCriacao: new Date() };
-            (postRepositoryMock.update as jest.Mock).mockReturnValue(updatedPost);
+            (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
 
-            const result = postService.update(1, updateData);
+            const result = await postService.update(1, updateData);
 
             expect(result).toBeDefined();
             expect(postRepositoryMock.update).toHaveBeenCalledWith(1, updateData);
         });
 
-        it('deve lançar AppError para ID inválido', () => { 
-            expect(() => postService.update(0, { titulo: 'Novo' })).toThrow(AppError);
+        it('deve lançar AppError para ID inválido', async () => { 
+            await expect(postService.update(0, { titulo: 'Novo' })).rejects.toThrow(AppError);
         });
     });
 
     describe('delete', () => {
-        it('deve deletar um post com sucesso', () => {
-            (postRepositoryMock.delete as jest.Mock).mockReturnValue(true);
+        it('deve deletar um post com sucesso', async () => {
+            (postRepositoryMock.delete as jest.Mock).mockResolvedValue(true);
 
-            const result = postService.delete(1);
+            await postService.delete(1);
 
-            expect(result).toBeUndefined();
             expect(postRepositoryMock.delete).toHaveBeenCalledWith(1);
         });
 
-        it('deve lançar AppError quando post não existe', () => {
-            (postRepositoryMock.delete as jest.Mock).mockReturnValue(false);
+        it('deve lançar AppError quando post não existe', async () => {
+            (postRepositoryMock.delete as jest.Mock).mockResolvedValue(false);
  
-            expect(() => postService.delete(999)).toThrow(AppError);
+            await expect(postService.delete(999)).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError com status 404 quando post não existe', () => {
-            (postRepositoryMock.delete as jest.Mock).mockReturnValue(false);
+        it('deve lançar AppError com status 404 quando post não existe', async () => {
+            (postRepositoryMock.delete as jest.Mock).mockResolvedValue(false);
  
             try {
-                postService.delete(999);
+                await postService.delete(999);
                 fail('Expected AppError to be thrown');
             } catch (error) {
                 expect(error).toBeInstanceOf(AppError);
@@ -251,18 +263,18 @@ describe('PostService', () => {
             }
         });
 
-        it('deve lançar AppError para ID inválido', () => { 
-            expect(() => postService.delete(0)).toThrow(AppError);
+        it('deve lançar AppError para ID inválido', async () => { 
+            await expect(postService.delete(0)).rejects.toThrow(AppError);
         });
     });
 
     describe('search', () => {
-        it('deve buscar posts com sucesso', () => {
+        it('deve buscar posts com sucesso', async () => {
             const query = 'express';
             const posts = [{ id: 1, titulo: 'Express', conteudo: 'Framework', autor: 'Autor', dataCriacao: new Date() }];
-            (postRepositoryMock.findByText as jest.Mock).mockReturnValue(posts);
+            (postRepositoryMock.findByText as jest.Mock).mockResolvedValue(posts);
 
-            const result = postService.search(query);
+            const result = await postService.search(query);
 
             expect(result.total).toBe(1);
             expect(result.query).toBe(query);
@@ -270,27 +282,27 @@ describe('PostService', () => {
             expect(postRepositoryMock.findByText).toHaveBeenCalledWith(query);
         });
 
-        it('deve retornar lista vazia quando nenhuma correspondência', () => {
+        it('deve retornar lista vazia quando nenhuma correspondência', async () => {
             const query = 'python';
-            (postRepositoryMock.findByText as jest.Mock).mockReturnValue([]);
+            (postRepositoryMock.findByText as jest.Mock).mockResolvedValue([]);
 
-            const result = postService.search(query);
+            const result = await postService.search(query);
 
             expect(result.total).toBe(0);
             expect(result.posts).toEqual([]);
         });
 
-        it('deve lançar AppError para query muito curta', () => { 
-            expect(() => postService.search('a')).toThrow(AppError);
+        it('deve lançar AppError para query muito curta', async () => { 
+            await expect(postService.search('a')).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError para query vazia', () => { 
-            expect(() => postService.search('')).toThrow(AppError);
+        it('deve lançar AppError para query vazia', async () => { 
+            await expect(postService.search('')).rejects.toThrow(AppError);
         });
 
-        it('deve lançar AppError com status 400 para query inválida', () => { 
+        it('deve lançar AppError com status 400 para query inválida', async () => { 
             try {
-                postService.search('a');
+                await postService.search('a');
                 fail('Expected AppError to be thrown');
             } catch (error) {
                 expect(error).toBeInstanceOf(AppError);

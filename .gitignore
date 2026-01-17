@@ -13,3 +13,7 @@ Thumbs.db
 
 # Logs de erro
 npm-debug.log*
+
+# Reports do jest sobre cobertura de testes
+# quando é usado "npx jest --coverage"
+coverage

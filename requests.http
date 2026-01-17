@@ -1,106 +1,108 @@
 @baseUrl = http://localhost:3000
+@contentType = application/json
 
 # ==========================================
-# GET /posts - Listar todos os posts
+# 1. FLUXO DE CRIAÇÃO E MANIPULAÇÃO (CRUD)
 # ==========================================
+# Este fluxo cria um post e utiliza o ID retornado para as operações subsequentes.
+# Ideal para testar em um banco limpo sem depender de IDs hardcoded.
 
-### [SUCESSO] Listar todos os posts
-# Resposta esperada: 200 OK com { status: "success", total: number, posts: [...] }
-GET {{baseUrl}}/posts
-
-###
-
-# ==========================================
-# GET /posts/search?q=... - Buscar por termo
-# ==========================================
-
-### [SUCESSO] Buscar por um termo válido
-# Resposta esperada: 200 OK com { status: "success", total: number, query: "...", posts: [...] }
-GET {{baseUrl}}/posts/search?q=Node
-
-### [ERRO] Tentar buscar com termo inválido (muito curto)
-# Resposta esperada: 400 Bad Request com { status: "error", message: "..." }
-GET {{baseUrl}}/posts/search?q=a
-
-###
-
-# ==========================================
-# GET /posts/:id - Buscar post por ID
-# ==========================================
-
-### [SUCESSO] Buscar um post que existe
-# Resposta esperada: 200 OK com { status: "success", id: 1, ... }
-GET {{baseUrl}}/posts/1
-
-### [ERRO] Tentar buscar um ID que não existe
-# Resposta esperada: 404 Not Found com { status: "error", message: "Post não encontrado." }
-GET {{baseUrl}}/posts/999
-
-### [ERRO] Buscar post com ID inválido (não numérico)
-# Resposta esperada: 400 Bad Request com { status: "error", message: "ID inválido..." }
-GET {{baseUrl}}/posts/abc
-
-###
-
-# ==========================================
-# POST /posts - Criar um novo post
-# ==========================================
-
-### [SUCESSO] Criar um novo Post com dados válidos
-# Resposta esperada: 201 Created com { status: "success", id: 5, ... }
+### 1.1 Criar um novo Post
+# @name createPost
 POST {{baseUrl}}/posts
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
-    "titulo": "Novo Post sobre Testes",
-    "conteudo": "Este é um conteúdo detalhado sobre como realizar testes de API.",
-    "autor": "Professor Alfredo"
+    "titulo": "Post de Teste Automatizado",
+    "conteudo": "Este conteúdo serve para validar o fluxo de criação e recuperação de ID dinâmico.",
+    "autor": "QA Tester"
 }
 
-### [ERRO] Tentar criar Post com dados inválidos
-# Resposta esperada: 422 Unprocessable Entity com { status: "error", message: "O título é obrigatório..." }
+### 1.2 Buscar o post recém-criado (Usa o ID do passo anterior)
+@postId = {{createPost.response.body.id}}
+GET {{baseUrl}}/posts/{{postId}}
+
+### 1.3 Atualizar o post criado
+PUT {{baseUrl}}/posts/{{postId}}
+Content-Type: {{contentType}}
+
+{
+    "titulo": "Título Atualizado Dinamicamente",
+    "conteudo": "O conteúdo foi alterado com sucesso."
+}
+
+### 1.4 Lista todos os posts (deve conter o post atualizado)
+GET {{baseUrl}}/posts/
+
+### 1.5 Deletar o post criado
+DELETE {{baseUrl}}/posts/{{postId}}
+
+### 1.6 Confirmar exclusão (Deve retornar 404)
+GET {{baseUrl}}/posts/{{postId}}
+
+
+# ==========================================
+# 2. LISTAGEM E BUSCA
+# ==========================================
+# Popula o banco com alguns itens para testar listas e buscas.
+
+### 2.1 Criar Post sobre Node.js
 POST {{baseUrl}}/posts
-Content-Type: application/json
+Content-Type: {{contentType}}
+
+{
+    "titulo": "Introdução ao Node.js",
+    "conteudo": "Node.js permite executar JavaScript no servidor com alta performance.",
+    "autor": "Professor Node"
+}
+
+### 2.2 Criar Post sobre Docker
+POST {{baseUrl}}/posts
+Content-Type: {{contentType}}
+
+{
+    "titulo": "Docker para Iniciantes",
+    "conteudo": "Containerização facilita o deploy e garante consistência de ambiente.",
+    "autor": "Professor Docker"
+}
+
+### 2.3 Listar todos os posts
+GET {{baseUrl}}/posts
+
+### 2.4 Buscar por palavra-chave "Node"
+GET {{baseUrl}}/posts/search?q=Node
+
+### 2.5 Buscar por palavra-chave "Container" (no conteúdo)
+GET {{baseUrl}}/posts/search?q=Container
+
+
+# ==========================================
+# 3. ALGUNS TESTES DE VALIDAÇÃO E ERROS
+# ==========================================
+
+### 3.1 Erro: Buscar ID inexistente
+GET {{baseUrl}}/posts/999999
+
+### 3.2 Erro: ID com formato inválido
+GET {{baseUrl}}/posts/abc-123
+
+### 3.3 Erro: Criar post com dados inválidos (Título curto)
+POST {{baseUrl}}/posts
+Content-Type: {{contentType}}
 
 {
     "titulo": "Oi",
-    "conteudo": "",
-    "autor": "Prof"
+    "conteudo": "Conteúdo válido, mas o título é muito curto.",
+    "autor": "Tester"
 }
 
-###
-
-# ==========================================
-# PUT /posts/:id - Atualizar um post
-# ==========================================
-
-### [SUCESSO] Atualizar um Post existente
-# Resposta esperada: 200 OK com { status: "success", id: 2, titulo: "Título Atualizado...", ... }
-PUT {{baseUrl}}/posts/2
-Content-Type: application/json
+### 3.4 Erro: Atualizar post inexistente
+PUT {{baseUrl}}/posts/999999
+Content-Type: {{contentType}}
 
 {
-    "titulo": "Título Atualizado com Sucesso",
-    "conteudo": "O conteúdo também foi modificado nesta requisição PUT."
+    "titulo": "Tentativa de Update"
 }
 
-### [ERRO] Tentar atualizar um post que não existe
-# Resposta esperada: 404 Not Found com { status: "error", message: "Post não encontrado." }
-PUT {{baseUrl}}/posts/999
-Content-Type: application/json
-
-{}
-
-###
-
-# ==========================================
-# DELETE /posts/:id - Deletar um post
-# ==========================================
-
-### [SUCESSO] Deletar o post de ID 3
-# Resposta esperada: 200 OK com { status: "success" }
-DELETE {{baseUrl}}/posts/3
-
-### [ERRO] Tentar deletar um post que não existe
-# Resposta esperada: 404 Not Found com { status: "error", message: "Post não encontrado." }
-DELETE {{baseUrl}}/posts/999
+### 3.5 Erro: Busca com termo muito curto
+GET {{baseUrl}}/posts/search?q=a

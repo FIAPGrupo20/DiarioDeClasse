@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import mongoose from 'mongoose';
 import { PostRepository } from '../../../src/api/repositories/PostRepository';
 import { PostModel } from '../../../src/api/models/Post';
@@ -8,7 +9,20 @@ describe('PostRepository', () => {
     beforeAll(async () => {
         // Conecta ao banco de dados de teste.
         // Se estiver rodando localmente sem variável definida, usa o localhost padrão.
-        const dbString = process.env.DB_CONNECTION_STRING || 'mongodb://localhost:27017/diario_de_classe_test';
+        const { 
+            MONGO_USER, 
+            MONGO_PASSWORD, 
+            MONGO_HOST = 'localhost', 
+            MONGO_PORT = '27017', 
+            DB_CONNECTION_STRING 
+        } = process.env;
+
+        const auth = MONGO_USER && MONGO_PASSWORD ? `${MONGO_USER}:${MONGO_PASSWORD}@` : '';
+        const options = MONGO_USER && MONGO_PASSWORD ? '?authSource=admin' : '';
+        
+        const dbString = DB_CONNECTION_STRING || 
+            `mongodb://${auth}${MONGO_HOST}:${MONGO_PORT}/diario_de_classe_test${options}`;
+
         await mongoose.connect(dbString);
     });
 

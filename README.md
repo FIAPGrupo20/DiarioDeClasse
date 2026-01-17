@@ -189,7 +189,8 @@ npm run test:coverage
 O relatório detalhado pode ser visualizado abrindo o arquivo `coverage/lcov-report/index.html` no navegador.
 
 ### Testes Manuais (REST Client):
-Para facilitar a interação e os testes com os endpoints da API, o projeto inclui o arquivo requests.http. Recomendamos o uso da extensão REST Client para Visual Studio Code.
+Esses testes são interessantes porque cobre o fluxo de ponta a ponta (do request até a resposta), no entanto não cobrem todos os corner cases e situações que são cobertos pelos testes automatizados. São também uma boa forma de ver a API em ação.
+Você pode rodar esses testes facilmente usando o arquivo requests.http com a extensão REST Client para Visual Studio Code:
 1. Instale a extensão REST Client no seu VS Code.
 2. Com a aplicação em execução, abra o arquivo requests.http.
 3. Clique no texto Send Request que aparece acima de cada requisição que deseja testar.

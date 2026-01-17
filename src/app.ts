@@ -1,5 +1,7 @@
 import 'express-async-errors'; // Deve ser importado no topo
 import express, { Request, Response, NextFunction } from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 import { router } from './routes/PostRoutes';
 import { AppError } from './utils/AppError';
 
@@ -7,6 +9,9 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
+
+// Documentação da API (Swagger)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rotas
 app.use(router);

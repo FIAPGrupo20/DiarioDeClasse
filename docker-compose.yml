@@ -5,7 +5,10 @@ services:
     container_name: diario-mongo
     restart: always
     ports:
-      - "27017:27017" # Expõe a porta para você poder conectar localmente (npm run dev)
+      - "${MONGO_PORT:-27017}:27017" # Mapeia a porta do host (variável) para a porta fixa do container
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - mongo_data:/data/db # Persiste os dados mesmo se apagar o container
 
@@ -16,9 +19,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Usa a variável definida no sistema/painel, ou usa o padrão local (mongodb://mongo...) se não houver nada definido.
-      # Isso permite que em produção você apenas configure a variável de ambiente sem mudar o código.
-      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING:-mongodb://mongo:27017/diario_de_classe}
+      # Usa a variável definida externamente (ex: Atlas) OU monta a local padrão se não houver
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING:-mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB:-diario_de_classe}?authSource=admin}
     depends_on:
       - mongo
 

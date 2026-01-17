@@ -140,7 +140,13 @@ Neste modo, o banco roda no Docker, mas a API roda localmente no seu Node.js, pe
     ```
 
 4.  **Configure as variáveis de ambiente:**
-    Se estiver usando Docker local, o valor padrão já funciona. Se for usar o MongoDB Atlas, ao invés do Docker, edite a variável `DB_CONNECTION_STRING` no novo arquivo `.env`.
+    Crie um arquivo `.env` na raiz do projeto com base no exemplo abaixo:
+    ```env
+    MONGO_USER=admin
+    MONGO_PASSWORD=senha_local
+    MONGO_DB=diario_de_classe
+    ```
+    _Obs: Existe um arquivo `.env.example` que pode ser usado como base._
 
 4.  **Inicie a aplicação da API:**
     ```bash

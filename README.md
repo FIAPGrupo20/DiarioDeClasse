@@ -254,7 +254,7 @@ O fluxo de trabalho (`.github/workflows/main.yml`) é acionado em todo *push* ou
 
 1. CI: Instala dependências (existe um cache de dependências), sobe um serviço MongoDB temporário e executa os testes.
 
-2. CD: Se os testes passarem (e for branch main), constrói a imagem Docker a partir do Dockerfle multi-stage e faz o push para o Docker Hub com versionamento semântico.
+2. CD: Se os testes passarem (e for branch main), constrói a imagem Docker a partir do Dockerfle multi-stage e faz o push para o Docker Hub com versionamento semântico. As imagens são armazenadas com tags no usuário do grupo: https://hub.docker.com/r/fiapgrupo20/diario-de-classe/
 
 ```mermaid
 graph TD

@@ -92,7 +92,7 @@ describe('PostController', () => {
 
 
             await expect(postController.getById(mockRequest as Request, mockResponse as Response))
-                .rejects.toThrow(AppError);
+                .rejects.toMatchObject({ message: 'Post não encontrado.', statusCode: 404 });
         });
 
         it('deve converter string ID para número', async () => {
@@ -147,7 +147,7 @@ describe('PostController', () => {
 
 
             await expect(postController.create(mockRequest as Request, mockResponse as Response))
-                .rejects.toThrow(AppError);
+                .rejects.toMatchObject({ message: 'Validação falhou', statusCode: 422 });
         });
     });
 
@@ -186,7 +186,7 @@ describe('PostController', () => {
             mockPostService.update.mockRejectedValue(error);
 
             await expect(postController.update(mockRequest as Request, mockResponse as Response))
-                .rejects.toThrow(AppError);
+                .rejects.toMatchObject({ message: 'Post não encontrado.', statusCode: 404 });
         });
 
         it('deve converter string ID para número na atualização', async () => {
@@ -235,7 +235,7 @@ describe('PostController', () => {
 
 
             await expect(postController.delete(mockRequest as Request, mockResponse as Response))
-                .rejects.toThrow(AppError);
+                .rejects.toMatchObject({ message: 'Post não encontrado.', statusCode: 404 });
         });
 
         it('deve converter string ID para número na deleção', async () => {
@@ -311,7 +311,7 @@ describe('PostController', () => {
             mockPostService.search.mockRejectedValue(error);
 
             await expect(postController.search(mockRequest as Request, mockResponse as Response))
-                .rejects.toThrow(AppError);
+                .rejects.toMatchObject({ message: 'Termo de busca inválido', statusCode: 400 });
         });
     });
 });

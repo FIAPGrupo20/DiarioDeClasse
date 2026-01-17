@@ -50,37 +50,49 @@ describe('PostService', () => {
             const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor' };
             //Act and Assert
             // Como é async, usamos rejects.toThrow
-            await expect(postService.create(postData)).rejects.toThrow(AppError);
+            await expect(postService.create(postData))
+                .rejects
+                .toThrow('O título é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve lançar AppError se o autor for muito curto', async () => {
             //Arrange
             const postData = { titulo: 'Título Válido de Teste', conteudo: 'Conteúdo Válido', autor: 'Oi' };
             //Act and Assert
-            await expect(postService.create(postData)).rejects.toThrow(AppError);
+            await expect(postService.create(postData))
+                .rejects
+                .toThrow('O autor é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve lançar AppError se o conteúdo for muito curto', async () => {
             //Arrange
             const postData = { titulo: 'Título Válido de Teste', conteudo: 'Oi', autor: 'Autor' };
             //Act and Assert
-            await expect(postService.create(postData)).rejects.toThrow(AppError);
+            await expect(postService.create(postData))
+                .rejects
+                .toThrow('O conteúdo é obrigatório e deve ter pelo menos 10 caracteres.');
         });
 
         it('deve lançar AppError se o título for vazio', async () => {
             //Arrange
             const postData = { titulo: '', conteudo: 'Conteúdo Válido', autor: 'Autor Teste' };
-            await expect(postService.create(postData)).rejects.toThrow(AppError);
+            await expect(postService.create(postData))
+                .rejects
+                .toThrow('O título é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve lançar AppError se o conteúdo for vazio', async () => {
             const postData = { titulo: 'Título Válido', conteudo: '', autor: 'Autor Teste' };
-            await expect(postService.create(postData)).rejects.toThrow(AppError);
+            await expect(postService.create(postData))
+                .rejects
+                .toThrow('O conteúdo é obrigatório e deve ter pelo menos 10 caracteres.');
         });
 
         it('deve lançar AppError se o autor for vazio', async () => {
             const postData = { titulo: 'Título Válido', conteudo: 'Conteúdo Válido', autor: '' };
-            await expect(postService.create(postData)).rejects.toThrow(AppError);
+            await expect(postService.create(postData))
+                .rejects
+                .toThrow('O autor é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve lançar AppError com status 422 para validação de título', async () => {
@@ -150,15 +162,21 @@ describe('PostService', () => {
         });
 
         it('deve lançar AppError para ID inválido (zero)', async () => { 
-            await expect(postService.getById(0)).rejects.toThrow(AppError);
+            await expect(postService.getById(0))
+                .rejects
+                .toThrow('ID inválido. Deve ser um número e maior que zero.');
         });
 
         it('deve lançar AppError para ID negativo', async () => { 
-            await expect(postService.getById(-1)).rejects.toThrow(AppError);
+            await expect(postService.getById(-1))
+                .rejects
+                .toThrow('ID inválido. Deve ser um número e maior que zero.');
         });
 
         it('deve lançar AppError para ID NaN', async () => { 
-            await expect(postService.getById(NaN)).rejects.toThrow(AppError);
+            await expect(postService.getById(NaN))
+                .rejects
+                .toThrow('ID inválido. Deve ser um número e maior que zero.');
         });
     });
 
@@ -205,19 +223,25 @@ describe('PostService', () => {
         it('deve validar título se fornecido', async () => {
             const updateData = { titulo: 'AB' };
  
-            await expect(postService.update(1, updateData)).rejects.toThrow(AppError);
+            await expect(postService.update(1, updateData))
+                .rejects
+                .toThrow('O título é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve validar conteúdo se fornecido', async () => {
             const updateData = { conteudo: 'Curto' };
  
-            await expect(postService.update(1, updateData)).rejects.toThrow(AppError);
+            await expect(postService.update(1, updateData))
+                .rejects
+                .toThrow('O conteúdo é obrigatório e deve ter pelo menos 10 caracteres.');
         });
 
         it('deve validar autor se fornecido', async () => {
             const updateData = { autor: 'AB' };
  
-            await expect(postService.update(1, updateData)).rejects.toThrow(AppError);
+            await expect(postService.update(1, updateData))
+                .rejects
+                .toThrow('O autor é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve permitir atualização parcial sem validar campos não informados', async () => {
@@ -232,7 +256,9 @@ describe('PostService', () => {
         });
 
         it('deve lançar AppError para ID inválido', async () => { 
-            await expect(postService.update(0, { titulo: 'Novo' })).rejects.toThrow(AppError);
+            await expect(postService.update(0, { titulo: 'Novo' }))
+                .rejects
+                .toThrow('ID inválido. Deve ser um número e maior que zero.');
         });
     });
 
@@ -264,7 +290,9 @@ describe('PostService', () => {
         });
 
         it('deve lançar AppError para ID inválido', async () => { 
-            await expect(postService.delete(0)).rejects.toThrow(AppError);
+            await expect(postService.delete(0))
+                .rejects
+                .toThrow('ID inválido. Deve ser um número e maior que zero.');
         });
     });
 
@@ -293,11 +321,15 @@ describe('PostService', () => {
         });
 
         it('deve lançar AppError para query muito curta', async () => { 
-            await expect(postService.search('a')).rejects.toThrow(AppError);
+            await expect(postService.search('a'))
+                .rejects
+                .toThrow('O termo de busca é obrigatório e deve ter pelo menos 2 caracteres.');
         });
 
         it('deve lançar AppError para query vazia', async () => { 
-            await expect(postService.search('')).rejects.toThrow(AppError);
+            await expect(postService.search(''))
+                .rejects
+                .toThrow('O termo de busca é obrigatório e deve ter pelo menos 2 caracteres.');
         });
 
         it('deve lançar AppError com status 400 para query inválida', async () => { 

@@ -2,44 +2,79 @@
 
 ![CI/CD Pipeline](https://github.com/FIAPGrupo20/DiarioDeClasse//actions/workflows/main.yml/badge.svg)
 
-**_Este projeto faz parte do Tech Challenge do curso de Full Stack Development da FIAP (Turma 7FSDT), tendo objetivo puramente educacional e vinculado à conclusão das atividades do curso._**
+## Contexto deste Repositório:
 
-A atividade propõe o desenvolvimento de uma plataforma de blogging voltada à educação pública, com o objetivo fictício de possibilitar a criação e o compartilhamento de conteúdos educacionais por professores da rede pública, facilitando o acesso dos alunos a materiais de estudo.
+**_Este projeto faz parte do Tech Challenge do curso de Full Stack Development da FIAP (Turma 7FSDT), tendo objetivo puramente educacional e vinculado à conclusão das atividades do curso._**
 
 ---
 
-## FIAP -  Tech Challenge 02:
+## Documentação FIAP -  Tech Challenge 02:
 
 ### 📌 Cenário e Problema Proposto
 A primeira versão da solução foi desenvolvida utilizando **OutSystems**, com boa aceitação em nível comunitário.  
-Nesta nova etapa, o projeto evolui para um cenário de maior escala, exigindo a reescrita do backend (uma API de Posts) em Node.js e a escolha de um banco apropriado.
+Nesta nova etapa, o projeto evoluiu para um cenário de maior escala, exigindo a reescrita do backend (uma API de Posts) em Node.js e a escolha de um banco apropriado.
 
-### 🛠️ Requisitos Técnicos
+### 🛠️ Requisitos Técnicos e Resumo de Como Foram Alcançados
 
 - ✅ **Back-end em Node.js e framework para roteamento e middleware**
     - Utilizamos TypeScript, Node.js e Express
 - ✅ **Persistência de dados em banco com modelos adequados**
     - Escolhemos o MongoDB e usamos o Mongoose para definir schemas
 - ✅ **Containerização com Docker para consistência de ambientes**
-    - A consistência é atingida usando Dockerfile multi-stage, build para o Docker Hub e Docker compose para subir aplicação e banco de dados.
+    - A consistência é atingida usando Dockerfile multi-stage, build da imagem para o Docker Hub e Docker compose para subir aplicação e banco de dados.
 - ✅ **Pipeline de CI/CD com GitHub Actions**
     - Todo push ou PR para a main roda testes e, caso passem, o fluxo de deploy gera uma imagem atualizada no Docker Hub.
-- ⏳ **20% de cobertura de testes unitários**
-    - Estamos cobrindo XXXX% pois ...
+- ✅ **>20% de cobertura de testes unitários**
+    - Pelo report de coverage do Jest, estamos cobrindo cerca de **66%** dos statements da aplicação inteira e **89%** das funções como um todo. Porém a lógica principal (controller, service, repository) está **99%** coberta.
 - ⏳ **Documentação técnica detalhada do projeto (setup, arquitetura e uso da API)**
-    - Toda contida neste README.md do projeto.
+    - Toda contida neste README.md do projeto e pode-se acessar o Swagger para ter mais detalhe da estrutura do do request e resposta da API para cada caso.
 
-### 📦 Entregáveis 
+### 📦 Lista de Entregáveis 
 - ✅ Código-fonte: repositório GitHub com o código do projeto,
 incluindo Dockerfiles e scripts de CI/CD.
-- ⏳ Apresentação Gravada: demonstração em vídeo do
+    - Tudo neste repositório.
+- ✅ Apresentação Gravada: demonstração em vídeo do
 funcionamento da aplicação, incluindo detalhes técnicos de
 implementação.
-- ⏳ Documentação: descrevendo a arquitetura do
+    - Enviada na plataforma da FIAP.
+- ✅ Documentação: descrevendo a arquitetura do
 sistema, uso da aplicação, relato de experiências e desafios
 enfrentados pela equipe durante o desenvolvimento (pode estar no README).
+    - Tudo neste Readme e Swagger.
 
-### 👥 Grupo
+### 📝 Relato de Experiências e Desafios
+
+O desenvolvimento desta fase representou um salto de complexidade técnica em relação à anterior, exigindo do nosso grupo um bom planejamento para conciliar as aulas com a própria entrega.
+
+#### 📅 Fim de Ano e Gestão de Tempo
+Essa fase coincidiu com o final do ano, somando o impacto das festividades, desafios pessoais de todos e recessos à carga horária de aulas, que nos pareceu superior à da fase anterior. Esse cenário exigiu que a gente usasse uma boa estratégia para "tentar fazer o máximo com o que temos" e que evitássemos grandes dependências entre nós.
+
+#### 🏗️ Estratégia Incremental: "Simples Primeiro"
+Para gerenciar a complexidade e permitir que todos os membros contribuíssem independentemente do progresso nas aulas teóricas de banco de dados, adotamos uma abordagem incremental:
+
+1.  **MVP em Memória:** Iniciamos com uma API funcional utilizando persistência em memória (Array), validada exclusivamente por testes manuais (`requests.http` e REST Client).
+2.  **Refatoração Arquitetural:** Organizamos o código em Camadas (Controllers, Services, Repositories). O objetivo foi isolar a lógica de negócio da infraestrutura desde cedo, já que sabíamos que o banco de dados viria depois e não queríamos integrá-lo naquele momento.
+3.  **Containerização:** Garantimos que a aplicação rodasse isolada via Docker.
+4.  **Criação da Infra de Testes Automatizados:** Implementamos a estrutura da suíte de testes unitários (Jest). Esta etapa foi crucial ser feita antes do CI/CD, para garantir que o pipeline tivesse o que validar.
+5.  **DevOps (CI/CD):** Configuramos a esteira no GitHub Actions para automatizar a execução dos testes criados na etapa anterior e o push da imagem no Docker Hub.
+6.  **Aumento da Cobertura de Testes Automatizados:** Nesse momento conseguimos paralelizar melhor as atividades do grupo e focamos em aumentar a cobertura de testes e na persistência do banco.
+7.  **Persistência Real (MongoDB):** Apenas na etapa final substituímos o repositório em memória pelo MongoDB. Como a arquitetura já estava desacoplada e testada, essa migração foi segura e de baixo impacto.
+8.  **Polimento:** Finalizamos com a limpeza dos retornos da API e documentação via Swagger.
+
+Essa ordem cronológica permitiu lidar com a complexidade do banco de dados apenas no final, mantendo o time produtivo nas regras de negócio e testes enquanto o conhecimento sobre NoSQL era consolidado (nem todos os membros consumiram as aulas em ordem sequencial).
+
+#### 🤖 O Papel da Inteligência Artificial
+Utilizamos IA Generativa como um "copiloto" técnico. Ela foi fundamental para:
+* Acelerar a escrita de testes unitários e documentação técnica (boilerplate).
+* Apoiar no entendimento de trechos de código legados ou produzidos por outros colegas.
+* Sugerir correções rápidas de bugs.
+
+Embora o uso da IA tenha exigido supervisão linha a linha para garantir a integridade da lógica, ela eliminou grande parte do trabalho repetitivo, permitindo que o time focasse na arquitetura e nas regras de negócio.
+
+#### 💡 Lições Aprendidas
+Em retrospecto, identificamos que a implementação dos testes unitários poderia ter ocorrido ainda mais cedo. Se tivéssemos iniciado com os testes (abordagem TDD), teríamos reduzido o ciclo de feedback inicial. No entanto, a cobertura atual garante a segurança necessária para as futuras evoluções da plataforma.
+
+### 👥 Composição do Grupo
 Grupo 20:
 - Ana Caroline Gonzaga Acquesta
 - Bruno de Camargo Guimarães
@@ -48,9 +83,13 @@ Grupo 20:
 
 ---
 
-## ⚙️ Funcionalidades
+## README (Documentação Técnica):
 
-### API – Endpoints
+Este repositório contém o código da API usada no backend da aplicação `Diario de Classe`, uma plataforma de blogging voltada à educação pública, com o objetivo [fictício](#contexto-deste-repositório) de possibilitar a criação e o compartilhamento de conteúdos educacionais por professores da rede pública, facilitando o acesso dos alunos a materiais de estudo.
+
+### ⚙️ Funcionalidades
+
+#### API – Endpoints
 
 - `GET /posts` – Lista de postagens disponíveis para leitura
 - `GET /posts/:id` – Retorna o conteúdo completo de uma postagem
@@ -59,13 +98,13 @@ Grupo 20:
 - `DELETE /posts/:id` – Remoção de uma postagem
 - `GET /posts/search` – Busca por palavras-chave
 
----
+_A documentação **live** da api pode ser vista via [Swagger](#testes-manuais-swagger) ao acessar http://localhost:3000/api-docs/ quando rodando local_
 
-## 🏗️ Arquitetura
+### 🏗️ Arquitetura
 
 O projeto segue uma arquitetura em camadas (Layered Architecture), visando desacoplamento e testabilidade e facilidade de manutenção. Cada camada tem uma responsabilidade bem definida.
 
-### Fluxo de Dados
+#### Fluxo de Dados
 
 ```mermaid
 graph LR
@@ -85,9 +124,7 @@ graph LR
 ```
 
 
-
-
-### Estrutura de Pastas
+#### Estrutura de Pastas
 
 A estrutura de pastas reflete a arquitetura definida:
 
@@ -111,18 +148,18 @@ src
 - **Repositories:** Camada de abstração do acesso a dados. Utiliza o PostModel do Mongoose para interagir com o MongoDB.
 - **Models:** Define os schemas e interfaces do Mongoose.
 - **Utils:** Ferramentas auxiliares, como a classe AppError para padronização de erros.
+- **Config:** Configurações como as de ambiente, banco de dados e swagger.
 
----
 
-## 🚀 Instalação e Execução
+### 🚀 Instalação e Execução
 
-### Pré-requisitos
+#### Pré-requisitos
 
 - [Node.js](https://nodejs.org/) (versão 24.x)
 - [Docker](https://www.docker.com/)
 - (Recomendado) A extensão [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) para VS Code, para testar a API.
 
-### Opção 1: Execução Híbrida (local+Docker), recomendada para desenvolvimento
+#### Opção 1: Execução Híbrida (local+Docker), recomendada para desenvolvimento
 Neste modo, o banco roda no Docker, mas a API roda localmente no seu Node.js, permitindo Hot Reload.
 
 1.  **Clone o repositório:**
@@ -154,7 +191,7 @@ Neste modo, o banco roda no Docker, mas a API roda localmente no seu Node.js, pe
     ```
     _O servidor estará disponível em `http://localhost:3000`._
 
-### Opção 2: Full Docker, recomendada para simular produção
+#### Opção 2: Full Docker, recomendada para simular produção
 Roda tanto a aplicação quanto o banco dentro de containers, isolando o ambiente completamente. O Docker Compose já configura a rede entre a API e o MongoDB:
 
 ```bash
@@ -163,17 +200,16 @@ docker compose up --build
 ```
  _O servidor estará disponível em `http://localhost:3000`._
 
----
 
-## 🧪 Testes
+### 🧪 Testes
 O projeto possui duas formas de teste: testes automatizados e testes manuais da API.
 
-
-### Testes Automatizados (Jest):
+#### Testes Automatizados (Jest):
 Para rodar a suite de testes unitários (há também testes de integração):
 ```bash
 npm run test
 ```
+Os arquivos de testes seguem a estrutura de diretórios de src espelhada na pasta tests. Isso facilita a localização dos testes correspondentes a cada arquivo da aplicação. Exemplo: O teste para `src/api/services/PostService.ts` fica em `tests/api/services/PostService.test.ts`.
 
 **Modo Assistido (Watch):**
 Para rodar os testes em modo interativo (re-executa apenas os testes referentes ao arquivo modificado cada vez que salva um arquivo):
@@ -186,9 +222,10 @@ Para rodar os testes e gerar um relatório de cobertura de código:
 ```bash
 npm run test:coverage
 ```
-O relatório detalhado pode ser visualizado abrindo o arquivo `coverage/lcov-report/index.html` no navegador.
+O relatório detalhado pode ser visualizado abrindo o arquivo `coverage/lcov-report/index.html` no navegador e também, de forma simplificada, no terminal.
 
-### Testes Manuais (REST Client):
+
+#### Testes Manuais (REST Client):
 Esses testes são interessantes porque cobre o fluxo de ponta a ponta (do request até a resposta), no entanto não cobrem todos os corner cases e situações que são cobertos pelos testes automatizados. São também uma boa forma de ver a API em ação.
 Você pode rodar esses testes facilmente usando o arquivo requests.http com a extensão REST Client para Visual Studio Code:
 1. Instale a extensão REST Client no seu VS Code.
@@ -196,34 +233,22 @@ Você pode rodar esses testes facilmente usando o arquivo requests.http com a ex
 3. Clique no texto Send Request que aparece acima de cada requisição que deseja testar.
 4. A resposta da API será exibida em uma nova aba ao lado.
 
-### Boas Práticas para Testes
 
-Para manter a qualidade e a consistência dos testes automatizados, siga as seguintes boas práticas ao criar novos testes:
+#### Testes Manuais (Swagger):
+Esses testes são interessantes porque cobrem o fluxo de ponta a ponta e permitem ver a API em ação de forma interativa e visual através do navegador, sem necessidade de instalar extensões.
 
-1.  **Estrutura de Diretórios:**
-    Mantenha a estrutura de diretórios de `src` espelhada na pasta `tests`. Isso facilita a localização dos testes correspondentes a cada arquivo da aplicação.
-    - Exemplo: O teste para `src/api/services/PostService.ts` deve estar em `tests/api/services/PostService.test.ts`.
+Para utilizar a interface do Swagger:
+1. Com a aplicação em execução, acesse `http://localhost:3000/api-docs` no seu navegador.
+2. A lista de endpoints disponíveis será exibida.
+3. Clique em um endpoint para expandir suas opções e clique no botão **Try it out**.
+4. Preencha os dados necessários (se houver) e clique em **Execute** para ver a resposta da API na mesma tela.
 
-2.  **Nomenclatura:**
-    - **Arquivos:** Nomeie os arquivos de teste com o sufixo `.test.ts` (ex: `NomeDoArquivo.test.ts`).
-    - **Descrições:** Escreva descrições claras e objetivas nos blocos `describe` (contexto) e `it` (comportamento esperado). Utilize o padrão "deve [fazer algo] quando [em tal condição]".
 
-3.  **Padrão AAA (Arrange, Act, Assert):**
-    Organize seus testes em três partes distintas para maior clareza:
-    - **Arrange:** Configure as condições iniciais, como mocks, dados de entrada e instâncias de classes.
-    - **Act:** Execute a função ou o método que está sendo testado.
-    - **Assert:** Verifique se o resultado obtido é o esperado.
-
-4.  **Independência dos Testes:**
-    Cada bloco `it` deve ser independente. A execução de um teste não deve afetar o resultado de outro. Utilize `beforeEach` para resetar o estado entre os testes.
-
----
-
-## 🔄 CI/CD e DevOps
+### 🔄 CI/CD e DevOps
 
 Este projeto utiliza **GitHub Actions** para automação da esteira de desenvolvimento, garantindo a qualidade do código e a entrega contínua da aplicação.
 
-### Pipeline Automatizado
+#### Pipeline Automatizado
 
 O fluxo de trabalho (`.github/workflows/main.yml`) é acionado em todo *push* ou *Pull Request* para a branch `main`. A partir daí:
 

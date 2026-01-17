@@ -26,7 +26,7 @@ Nesta nova etapa, o projeto evoluiu para um cenário de maior escala, exigindo a
     - Todo push ou PR para a main roda testes e, caso passem, o fluxo de deploy gera uma imagem atualizada no Docker Hub.
 - ✅ **>20% de cobertura de testes unitários**
     - Pelo report de coverage do Jest, estamos cobrindo cerca de **66%** dos statements da aplicação inteira e **89%** das funções como um todo. Porém a lógica principal (controller, service, repository) está **99%** coberta.
-- ⏳ **Documentação técnica detalhada do projeto (setup, arquitetura e uso da API)**
+- ✅ **Documentação técnica detalhada do projeto (setup, arquitetura e uso da API)**
     - Toda contida neste README.md do projeto e pode-se acessar o Swagger para ter mais detalhe da estrutura do do request e resposta da API para cada caso.
 
 ### 📦 Lista de Entregáveis 

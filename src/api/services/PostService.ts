@@ -39,6 +39,11 @@ export class PostService {
     public async update(id: number, data: Partial<Omit<IPost, 'id' | 'dataCriacao'>>): Promise<Post> {
         this.validarId(id);
 
+        // Valida se algum dado foi enviado para atualização
+        if (Object.keys(data).length === 0) {
+            throw new AppError('Nenhum dado fornecido para atualização.', 400);
+        }
+
         // Validações apenas se os campos forem informados
         if (data.titulo !== undefined) {
             this.validarTitulo(data.titulo);

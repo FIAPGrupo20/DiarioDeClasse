@@ -97,13 +97,9 @@ describe('PostService', () => {
 
         it('deve lançar AppError com status 422 para validação de título', async () => {
             const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor' };
-            try {
-                await postService.create(postData);
-                fail('Expected AppError to be thrown');
-            } catch (error) {
-                expect(error).toBeInstanceOf(AppError);
-                expect((error as AppError).statusCode).toBe(422);
-            }
+            await expect(postService.create(postData))
+                .rejects
+                .toHaveProperty('statusCode', 422);
         });
     });
 
@@ -145,20 +141,16 @@ describe('PostService', () => {
 
         it('deve lançar AppError quando post não existe', async () => {
             (postRepositoryMock.findById as jest.Mock).mockResolvedValue(null);
- 
-            await expect(postService.getById(999)).rejects.toThrow(AppError);
+            await expect(postService.getById(999))
+                .rejects
+                .toThrow('Post não encontrado.');
         });
 
         it('deve lançar AppError com status 404 quando post não existe', async () => {
             (postRepositoryMock.findById as jest.Mock).mockResolvedValue(null);
- 
-            try {
-                await postService.getById(999);
-                fail('Expected AppError to be thrown');
-            } catch (error) {
-                expect(error).toBeInstanceOf(AppError);
-                expect((error as AppError).statusCode).toBe(404);
-            }
+            await expect(postService.getById(999))
+                .rejects
+                .toHaveProperty('statusCode', 404);
         });
 
         it('deve lançar AppError para ID inválido (zero)', async () => { 
@@ -204,20 +196,16 @@ describe('PostService', () => {
 
         it('deve lançar AppError quando post não existe', async () => {
             (postRepositoryMock.update as jest.Mock).mockResolvedValue(null);
- 
-            await expect(postService.update(999, { titulo: 'Novo Título' })).rejects.toThrow(AppError);
+            await expect(postService.update(999, { titulo: 'Novo Título' }))
+                .rejects
+                .toThrow('Post não encontrado.');
         });
 
         it('deve lançar AppError com status 404 quando post não existe', async () => {
             (postRepositoryMock.update as jest.Mock).mockResolvedValue(null);
- 
-            try {
-                await postService.update(999, { titulo: 'Novo' });
-                fail('Expected AppError to be thrown');
-            } catch (error) {
-                expect(error).toBeInstanceOf(AppError);
-                expect((error as AppError).statusCode).toBe(404);
-            }
+            await expect(postService.update(999, { titulo: 'Novo' }))
+                .rejects
+                .toHaveProperty('statusCode', 404);
         });
 
         it('deve validar título se fornecido', async () => {
@@ -226,6 +214,17 @@ describe('PostService', () => {
             await expect(postService.update(1, updateData))
                 .rejects
                 .toThrow('O título é obrigatório e deve ter pelo menos 3 caracteres.');
+        });
+
+        it('deve atualizar o conteúdo se fornecido', async () => {
+            const updateData = { conteudo: 'Conteúdo Atualizado e Válido' };
+            const updatedPost = { id: 1, titulo: 'Título', conteudo: 'Conteúdo Atualizado e Válido', autor: 'Autor', dataCriacao: new Date() };
+            (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
+
+            const result = await postService.update(1, updateData);
+
+            expect(result).toEqual(updatedPost);
+            expect(postRepositoryMock.update).toHaveBeenCalledWith(1, updateData);
         });
 
         it('deve validar conteúdo se fornecido', async () => {
@@ -260,6 +259,13 @@ describe('PostService', () => {
                 .rejects
                 .toThrow('ID inválido. Deve ser um número e maior que zero.');
         });
+
+        it('deve lançar AppError se nenhum dado for fornecido para atualização', async () => {
+            const updateData = {}; // Objeto vazio
+            await expect(postService.update(1, updateData))
+                .rejects
+                .toThrow('Nenhum dado fornecido para atualização.');
+        });
     });
 
     describe('delete', () => {
@@ -273,20 +279,16 @@ describe('PostService', () => {
 
         it('deve lançar AppError quando post não existe', async () => {
             (postRepositoryMock.delete as jest.Mock).mockResolvedValue(false);
- 
-            await expect(postService.delete(999)).rejects.toThrow(AppError);
+            await expect(postService.delete(999))
+                .rejects
+                .toThrow('Post não encontrado.');
         });
 
         it('deve lançar AppError com status 404 quando post não existe', async () => {
             (postRepositoryMock.delete as jest.Mock).mockResolvedValue(false);
- 
-            try {
-                await postService.delete(999);
-                fail('Expected AppError to be thrown');
-            } catch (error) {
-                expect(error).toBeInstanceOf(AppError);
-                expect((error as AppError).statusCode).toBe(404);
-            }
+            await expect(postService.delete(999))
+                .rejects
+                .toHaveProperty('statusCode', 404);
         });
 
         it('deve lançar AppError para ID inválido', async () => { 
@@ -333,13 +335,9 @@ describe('PostService', () => {
         });
 
         it('deve lançar AppError com status 400 para query inválida', async () => { 
-            try {
-                await postService.search('a');
-                fail('Expected AppError to be thrown');
-            } catch (error) {
-                expect(error).toBeInstanceOf(AppError);
-                expect((error as AppError).statusCode).toBe(400);
-            }
+            await expect(postService.search('a'))
+                .rejects
+                .toHaveProperty('statusCode', 400);
         });
     });
 });

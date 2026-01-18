@@ -59,20 +59,21 @@ Para gerenciar a complexidade e permitir que todos os membros contribuíssem ind
 5.  **DevOps (CI/CD):** Configuramos a esteira no GitHub Actions para automatizar a execução dos testes criados na etapa anterior e o push da imagem no Docker Hub.
 6.  **Aumento da Cobertura de Testes Automatizados:** Nesse momento conseguimos paralelizar melhor as atividades do grupo e focamos em aumentar a cobertura de testes e na persistência do banco.
 7.  **Persistência Real (MongoDB):** Apenas na etapa final substituímos o repositório em memória pelo MongoDB. Como a arquitetura já estava desacoplada e testada, essa migração foi segura e de baixo impacto.
-8.  **Polimento:** Finalizamos com a limpeza dos retornos da API e documentação via Swagger.
+8.  **Polimento:** Finalizamos removendo parâmetros internos do banco dos retornos da API e implementando a documentação via Swagger.
 
 Essa ordem cronológica permitiu lidar com a complexidade do banco de dados apenas no final, mantendo o time produtivo nas regras de negócio e testes enquanto o conhecimento sobre NoSQL era consolidado (nem todos os membros consumiram as aulas em ordem sequencial).
 
 #### 🤖 O Papel da Inteligência Artificial
 Utilizamos IA Generativa como um "copiloto" técnico. Ela foi fundamental para:
 * Acelerar a escrita de testes unitários e documentação técnica (boilerplate).
-* Apoiar no entendimento de trechos de código legados ou produzidos por outros colegas.
+* Apoiar no entendimento de trechos de código produzidos por outros colegas e como "mais um par de olhos" em refactorings.
 * Sugerir correções rápidas de bugs.
 
 Embora o uso da IA tenha exigido supervisão linha a linha para garantir a integridade da lógica, ela eliminou grande parte do trabalho repetitivo, permitindo que o time focasse na arquitetura e nas regras de negócio.
 
 #### 💡 Lições Aprendidas
-Em retrospecto, identificamos que a implementação dos testes unitários poderia ter ocorrido ainda mais cedo. Se tivéssemos iniciado com os testes (abordagem TDD), teríamos reduzido o ciclo de feedback inicial. No entanto, a cobertura atual garante a segurança necessária para as futuras evoluções da plataforma.
+* Em retrospecto, identificamos que a implementação dos testes unitários poderia ter ocorrido ainda mais cedo. Se tivéssemos iniciado com os testes (abordagem TDD), teríamos reduzido o ciclo de feedback inicial. No entanto, a cobertura atual garante a segurança necessária para as futuras evoluções da plataforma.
+* Foi muito importante manter a documentação mínima de desenvolvimento durante o projeto (como rodar, como testar, como o CI/CD funciona, etc.) pois permitiu que todos os membro do grupo fosse experimentando as novidades conforme iam surgindo.
 
 ### 👥 Composição do Grupo
 Grupo 20:

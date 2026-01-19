@@ -76,7 +76,7 @@ Embora o uso da IA tenha exigido supervisão linha a linha para garantir a integ
 * Foi muito importante manter a documentação mínima de desenvolvimento durante o projeto (como rodar, como testar, como o CI/CD funciona, etc.) pois permitiu que todos os membro do grupo fosse experimentando as novidades conforme iam surgindo.
 
 ### 👥 Composição do Grupo
-Grupo 20:
+Grupo 23:
 - Ana Caroline Gonzaga Acquesta
 - Bruno de Camargo Guimarães
 - Luiz Alfredo Bernardo

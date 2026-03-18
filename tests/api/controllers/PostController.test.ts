@@ -33,8 +33,8 @@ describe('PostController', () => {
     describe('getAll', () => {
         it('deve retornar todos os posts com sucesso', async () => {
             const postsData = [
-                { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() },
-                { id: 2, titulo: 'Post 2', conteudo: 'Conteúdo 2', autor: 'Autor 2', dataCriacao: new Date() },
+                { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', disciplina: 'Matemática', dataCriacao: new Date() },
+                { id: 2, titulo: 'Post 2', conteudo: 'Conteúdo 2', autor: 'Autor 2', disciplina: 'História', dataCriacao: new Date() },
             ];
             const posts = postsData.map(p => ({ ...p, toJSON: jest.fn().mockReturnValue(p) })) as unknown as Post[];
             mockPostService.getAll.mockResolvedValue({ total: 2, posts });
@@ -67,7 +67,7 @@ describe('PostController', () => {
     describe('getById', () => {
         it('deve retornar um post por ID com sucesso', async () => {
 
-            const postData = { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() };
+            const postData = { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', disciplina: 'Matemática', dataCriacao: new Date() };
             const post = { ...postData, toJSON: jest.fn().mockReturnValue(postData) } as unknown as Post;
             mockRequest.params = { id: '1' };
             mockPostService.getById.mockResolvedValue(post);
@@ -97,7 +97,7 @@ describe('PostController', () => {
 
         it('deve converter string ID para número', async () => {
 
-            const postData = { id: 42, titulo: 'Post', conteudo: 'Conteúdo', autor: 'Autor', dataCriacao: new Date() };
+            const postData = { id: 42, titulo: 'Post', conteudo: 'Conteúdo', autor: 'Autor', disciplina: 'Matemática', dataCriacao: new Date() };
             const post = { ...postData, toJSON: jest.fn().mockReturnValue(postData) } as unknown as Post;
             mockRequest.params = { id: '42' };
             mockPostService.getById.mockResolvedValue(post);
@@ -116,7 +116,8 @@ describe('PostController', () => {
             const newPostData = {
                 titulo: 'Novo Post',
                 conteudo: 'Conteúdo do novo post',
-                autor: 'Novo Autor'
+                autor: 'Novo Autor',
+                disciplina: 'Matemática'
             };
             const createdPostData = {
                 id: 1,
@@ -141,7 +142,7 @@ describe('PostController', () => {
 
         it('deve retornar erro quando dados são inválidos', async () => {
 
-            mockRequest.body = { titulo: 'A', conteudo: 'B', autor: 'C' };
+            mockRequest.body = { titulo: 'A', conteudo: 'B', autor: 'C', disciplina: 'D' };
             const error = new AppError('Validação falhou', 422);
             mockPostService.create.mockRejectedValue(error);
 
@@ -160,6 +161,7 @@ describe('PostController', () => {
                 titulo: 'Título Atualizado',
                 conteudo: 'Conteúdo original',
                 autor: 'Autor original',
+                disciplina: 'Matemática',
                 dataCriacao: new Date()
             };
             const updatedPost = { ...updatedPostData, toJSON: jest.fn().mockReturnValue(updatedPostData) } as unknown as Post;
@@ -197,6 +199,7 @@ describe('PostController', () => {
                 titulo: 'Título',
                 conteudo: 'Conteúdo',
                 autor: 'Novo Autor',
+                disciplina: 'Matemática',
                 dataCriacao: new Date()
             };
             const updatedPost = { ...updatedPostData, toJSON: jest.fn().mockReturnValue(updatedPostData) } as unknown as Post;
@@ -251,35 +254,58 @@ describe('PostController', () => {
     });
 
     describe('search', () => {
-        it('deve buscar posts com sucesso', async () => {
+        it('deve buscar posts com filtro de texto com sucesso', async () => {
 
-            const query = 'express';
             const postsData = [
-                { id: 1, titulo: 'Express é incrível', conteudo: 'Conteúdo', autor: 'Autor', dataCriacao: new Date() }
+                { id: 1, titulo: 'Express é incrível', conteudo: 'Conteúdo', autor: 'Autor', disciplina: 'Física', dataCriacao: new Date() }
             ];
             const posts = postsData.map(p => ({ ...p, toJSON: jest.fn().mockReturnValue(p) })) as unknown as Post[];
-            mockRequest.query = { q: query };
-            mockPostService.search.mockResolvedValue({ total: 1, query, posts });
+            mockRequest.query = { texto: 'express' };
+            const filters = { texto: 'express', professor: '', disciplina: '', orderBy: 'dataCriacao' as const, order: 'desc' as const };
+            mockPostService.search.mockResolvedValue({ total: 1, filters, posts });
 
 
             await postController.search(mockRequest as Request, mockResponse as Response);
 
 
-            expect(mockPostService.search).toHaveBeenCalledWith(query);
+            expect(mockPostService.search).toHaveBeenCalled();
             expect(mockResponse.status).toHaveBeenCalledWith(200);
             expect(mockResponse.json).toHaveBeenCalledWith({
                 status: 'success',
                 total: 1,
-                query,
+                filters,
+                posts
+            });
+        });
+
+        it('deve buscar posts com filtro de disciplina', async () => {
+ 
+            const postsData = [
+                { id: 1, titulo: 'Aula de Física', conteudo: 'Conteúdo', autor: 'Autor', disciplina: 'Física', dataCriacao: new Date() }
+            ];
+            const posts = postsData.map(p => ({ ...p, toJSON: jest.fn().mockReturnValue(p) })) as unknown as Post[];
+            mockRequest.query = { disciplina: 'Física' };
+            const filters = { texto: '', professor: '', disciplina: 'Física', orderBy: 'dataCriacao' as const, order: 'desc' as const };
+            mockPostService.search.mockResolvedValue({ total: 1, filters, posts });
+
+
+            await postController.search(mockRequest as Request, mockResponse as Response);
+
+
+            expect(mockResponse.status).toHaveBeenCalledWith(200);
+            expect(mockResponse.json).toHaveBeenCalledWith({
+                status: 'success',
+                total: 1,
+                filters,
                 posts
             });
         });
 
         it('deve retornar lista vazia quando nenhum post é encontrado', async () => {
  
-            const query = 'python';
-            mockRequest.query = { q: query };
-            mockPostService.search.mockResolvedValue({ total: 0, query, posts: [] });
+            mockRequest.query = { texto: 'inexistente' };
+            const filters = { texto: 'inexistente', professor: '', disciplina: '', orderBy: 'dataCriacao' as const, order: 'desc' as const };
+            mockPostService.search.mockResolvedValue({ total: 0, filters, posts: [] });
 
 
             await postController.search(mockRequest as Request, mockResponse as Response);
@@ -289,24 +315,25 @@ describe('PostController', () => {
             expect(mockResponse.json).toHaveBeenCalledWith({
                 status: 'success',
                 total: 0,
-                query,
+                filters,
                 posts: []
             });
         });
 
-        it('deve usar string vazia como query padrão quando q não é fornecido', async () => {
+        it('deve usar valores padrão quando nenhum filtro é fornecido', async () => {
 
             mockRequest.query = {};
-            mockPostService.search.mockResolvedValue({ total: 0, query: '', posts: [] });
+            const filters = { texto: '', professor: '', disciplina: '', orderBy: 'dataCriacao' as const, order: 'desc' as const };
+            mockPostService.search.mockResolvedValue({ total: 0, filters, posts: [] });
 
             await postController.search(mockRequest as Request, mockResponse as Response);
 
-            expect(mockPostService.search).toHaveBeenCalledWith('');
+            expect(mockPostService.search).toHaveBeenCalledWith(expect.any(Object));
         });
 
-        it('deve retornar erro quando query é inválida', async () => {
+        it('deve retornar erro quando a busca falha', async () => {
 
-            mockRequest.query = { q: 'a' };
+            mockRequest.query = { texto: 'a' };
             const error = new AppError('Termo de busca inválido', 400);
             mockPostService.search.mockRejectedValue(error);
 

@@ -8,6 +8,7 @@ const makePostRepositoryMock = () => {
         findAll: jest.fn(),
         findById: jest.fn(),
         findByText: jest.fn(),
+        search: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
         delete: jest.fn(),
@@ -30,7 +31,8 @@ describe('PostService', () => {
             const postData = {
                 titulo: 'Título Válido de Teste',
                 conteudo: 'Conteúdo com mais de 10 caracteres para teste',
-                autor: 'Professor Teste'
+                autor: 'Professor Teste',
+                disciplina: 'Matemática'
             };
             const createdPost = { id: 1, dataCriacao: new Date(), ...postData };
 
@@ -47,7 +49,7 @@ describe('PostService', () => {
 
         it('deve lançar AppError se o título for muito curto', async () => {
             //Arrange
-            const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor' };
+            const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor', disciplina: 'Matemática' };
             //Act and Assert
             // Como é async, usamos rejects.toThrow
             await expect(postService.create(postData))
@@ -57,7 +59,7 @@ describe('PostService', () => {
 
         it('deve lançar AppError se o autor for muito curto', async () => {
             //Arrange
-            const postData = { titulo: 'Título Válido de Teste', conteudo: 'Conteúdo Válido', autor: 'Oi' };
+            const postData = { titulo: 'Título Válido de Teste', conteudo: 'Conteúdo Válido', autor: 'Oi', disciplina: 'Matemática' };
             //Act and Assert
             await expect(postService.create(postData))
                 .rejects
@@ -66,7 +68,7 @@ describe('PostService', () => {
 
         it('deve lançar AppError se o conteúdo for muito curto', async () => {
             //Arrange
-            const postData = { titulo: 'Título Válido de Teste', conteudo: 'Oi', autor: 'Autor' };
+            const postData = { titulo: 'Título Válido de Teste', conteudo: 'Oi', autor: 'Autor', disciplina: 'Matemática' };
             //Act and Assert
             await expect(postService.create(postData))
                 .rejects
@@ -75,39 +77,52 @@ describe('PostService', () => {
 
         it('deve lançar AppError se o título for vazio', async () => {
             //Arrange
-            const postData = { titulo: '', conteudo: 'Conteúdo Válido', autor: 'Autor Teste' };
+            const postData = { titulo: '', conteudo: 'Conteúdo Válido', autor: 'Autor Teste', disciplina: 'Matemática' };
             await expect(postService.create(postData))
                 .rejects
                 .toThrow('O título é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve lançar AppError se o conteúdo for vazio', async () => {
-            const postData = { titulo: 'Título Válido', conteudo: '', autor: 'Autor Teste' };
+            const postData = { titulo: 'Título Válido', conteudo: '', autor: 'Autor Teste', disciplina: 'Matemática' };
             await expect(postService.create(postData))
                 .rejects
                 .toThrow('O conteúdo é obrigatório e deve ter pelo menos 10 caracteres.');
         });
 
         it('deve lançar AppError se o autor for vazio', async () => {
-            const postData = { titulo: 'Título Válido', conteudo: 'Conteúdo Válido', autor: '' };
+            const postData = { titulo: 'Título Válido', conteudo: 'Conteúdo Válido', autor: '', disciplina: 'Matemática' };
             await expect(postService.create(postData))
                 .rejects
                 .toThrow('O autor é obrigatório e deve ter pelo menos 3 caracteres.');
         });
 
         it('deve lançar AppError com status 422 para validação de título', async () => {
-            const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor' };
+            const postData = { titulo: 'Oi', conteudo: 'Conteúdo Válido', autor: 'Autor', disciplina: 'Matemática' };
             await expect(postService.create(postData))
                 .rejects
                 .toHaveProperty('statusCode', 422);
+        });
+
+        it('deve lançar AppError se a disciplina estiver fora da lista permitida', async () => {
+            const postData = {
+                titulo: 'Título Válido',
+                conteudo: 'Conteúdo válido com mais de 10 caracteres',
+                autor: 'Autor Válido',
+                disciplina: 'Tecnologia'
+            };
+
+            await expect(postService.create(postData))
+                .rejects
+                .toThrow('Disciplina inválida. Selecione uma disciplina válida do Ensino Médio.');
         });
     });
 
     describe('getAll', () => {
         it('deve retornar todos os posts com sucesso', async () => {
             const posts = [
-                { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() },
-                { id: 2, titulo: 'Post 2', conteudo: 'Conteúdo 2', autor: 'Autor 2', dataCriacao: new Date() }
+                { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', disciplina: 'Matemática', dataCriacao: new Date() },
+                { id: 2, titulo: 'Post 2', conteudo: 'Conteúdo 2', autor: 'Autor 2', disciplina: 'História', dataCriacao: new Date() }
             ];
             (postRepositoryMock.findAll as jest.Mock).mockResolvedValue(posts);
 
@@ -130,7 +145,7 @@ describe('PostService', () => {
 
     describe('getById', () => {
         it('deve retornar um post por ID com sucesso', async () => {
-            const post = { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() };
+            const post = { id: 1, titulo: 'Post 1', conteudo: 'Conteúdo 1', autor: 'Autor 1', disciplina: 'Matemática', dataCriacao: new Date() };
             (postRepositoryMock.findById as jest.Mock).mockResolvedValue(post);
 
             const result = await postService.getById(1);
@@ -175,7 +190,7 @@ describe('PostService', () => {
     describe('update', () => {
         it('deve atualizar um post com sucesso', async () => {
             const updateData = { titulo: 'Novo Título' };
-            const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo 1', autor: 'Autor 1', dataCriacao: new Date() };
+            const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo 1', autor: 'Autor 1', disciplina: 'Matemática', dataCriacao: new Date() };
             (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
 
             const result = await postService.update(1, updateData);
@@ -186,7 +201,7 @@ describe('PostService', () => {
 
         it('deve atualizar múltiplos campos', async () => {
             const updateData = { titulo: 'Novo Título', autor: 'Novo Autor' };
-            const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo 1', autor: 'Novo Autor', dataCriacao: new Date() };
+            const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo 1', autor: 'Novo Autor', disciplina: 'Matemática', dataCriacao: new Date() };
             (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
 
             await postService.update(1, updateData);
@@ -218,7 +233,7 @@ describe('PostService', () => {
 
         it('deve atualizar o conteúdo se fornecido', async () => {
             const updateData = { conteudo: 'Conteúdo Atualizado e Válido' };
-            const updatedPost = { id: 1, titulo: 'Título', conteudo: 'Conteúdo Atualizado e Válido', autor: 'Autor', dataCriacao: new Date() };
+            const updatedPost = { id: 1, titulo: 'Título', conteudo: 'Conteúdo Atualizado e Válido', autor: 'Autor', disciplina: 'Matemática', dataCriacao: new Date() };
             (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
 
             const result = await postService.update(1, updateData);
@@ -245,7 +260,7 @@ describe('PostService', () => {
 
         it('deve permitir atualização parcial sem validar campos não informados', async () => {
             const updateData = { titulo: 'Novo Título' };
-            const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo', autor: 'Autor', dataCriacao: new Date() };
+            const updatedPost = { id: 1, titulo: 'Novo Título', conteudo: 'Conteúdo', autor: 'Autor', disciplina: 'Matemática', dataCriacao: new Date() };
             (postRepositoryMock.update as jest.Mock).mockResolvedValue(updatedPost);
 
             const result = await postService.update(1, updateData);
@@ -299,45 +314,103 @@ describe('PostService', () => {
     });
 
     describe('search', () => {
-        it('deve buscar posts com sucesso', async () => {
-            const query = 'express';
-            const posts = [{ id: 1, titulo: 'Express', conteudo: 'Framework', autor: 'Autor', dataCriacao: new Date() }];
-            (postRepositoryMock.findByText as jest.Mock).mockResolvedValue(posts);
+        it('deve buscar posts com filtro de texto com sucesso', async () => {
+            const filters = { texto: 'express' };
+            const posts = [{ id: 1, titulo: 'Express', conteudo: 'Framework', autor: 'Autor', disciplina: 'Física', dataCriacao: new Date() }];
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue(posts);
 
-            const result = await postService.search(query);
+            const result = await postService.search(filters);
 
             expect(result.total).toBe(1);
-            expect(result.query).toBe(query);
+            expect(result.filters).toEqual(filters);
             expect(result.posts).toEqual(posts);
-            expect(postRepositoryMock.findByText).toHaveBeenCalledWith(query);
+            expect(postRepositoryMock.search).toHaveBeenCalledWith(filters);
+        });
+
+        it('deve buscar posts com filtro de professor', async () => {
+            const filters = { professor: 'João Silva' };
+            const posts = [{ id: 1, titulo: 'Aula de Matemática', conteudo: 'Conteúdo da aula', autor: 'João Silva', disciplina: 'Matemática', dataCriacao: new Date() }];
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue(posts);
+
+            const result = await postService.search(filters);
+
+            expect(result.total).toBe(1);
+            expect(result.filters).toEqual(filters);
+            expect(postRepositoryMock.search).toHaveBeenCalledWith(filters);
+        });
+
+        it('deve buscar posts com filtro de disciplina', async () => {
+            const filters = { disciplina: 'Matemática' };
+            const posts = [{ id: 1, titulo: 'Aula de Matemática', conteudo: 'Conteúdo', autor: 'Professor', disciplina: 'Matemática', dataCriacao: new Date() }];
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue(posts);
+
+            const result = await postService.search(filters);
+
+            expect(result.total).toBe(1);
+            expect(result.filters).toEqual(filters);
+        });
+
+        it('deve buscar posts com múltiplos filtros', async () => {
+            const filters = { texto: 'aula', professor: 'João', disciplina: 'Física' };
+            const posts = [{ id: 1, titulo: 'Aula de Física', conteudo: 'Conteúdo da aula', autor: 'João Silva', disciplina: 'Física', dataCriacao: new Date() }];
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue(posts);
+
+            const result = await postService.search(filters);
+
+            expect(result.total).toBe(1);
+            expect(postRepositoryMock.search).toHaveBeenCalledWith(filters);
+        });
+
+        it('deve buscar posts com ordenação por título A-Z', async () => {
+            const filters: { orderBy: 'titulo' | 'dataCriacao'; order: 'asc' | 'desc' } = { orderBy: 'titulo', order: 'asc' };
+            const posts = [
+                { id: 1, titulo: 'Aula de Física', conteudo: 'Conteúdo', autor: 'Professor', disciplina: 'Física', dataCriacao: new Date() },
+                { id: 2, titulo: 'Biologia Marinha', conteudo: 'Conteúdo', autor: 'Professor', disciplina: 'Biologia', dataCriacao: new Date() }
+            ];
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue(posts);
+
+            const result = await postService.search(filters);
+
+            expect(result.total).toBe(2);
+            expect(postRepositoryMock.search).toHaveBeenCalledWith(filters);
+        });
+
+        it('deve buscar posts com ordenação por data decrescente (padrão)', async () => {
+            const filters: { orderBy: 'titulo' | 'dataCriacao'; order: 'asc' | 'desc' } = { orderBy: 'dataCriacao', order: 'desc' };
+            const posts = [{ id: 1, titulo: 'Post Recente', conteudo: 'Conteúdo', autor: 'Professor', disciplina: 'Matemática', dataCriacao: new Date() }];
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue(posts);
+
+            const result = await postService.search(filters);
+
+            expect(result.total).toBe(1);
+            expect(postRepositoryMock.search).toHaveBeenCalledWith(filters);
         });
 
         it('deve retornar lista vazia quando nenhuma correspondência', async () => {
-            const query = 'python';
-            (postRepositoryMock.findByText as jest.Mock).mockResolvedValue([]);
+            const filters = { texto: 'inexistente' };
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue([]);
 
-            const result = await postService.search(query);
+            const result = await postService.search(filters);
 
             expect(result.total).toBe(0);
             expect(result.posts).toEqual([]);
         });
 
-        it('deve lançar AppError para query muito curta', async () => { 
-            await expect(postService.search('a'))
+        it('deve validar texto quando informado', async () => {
+            await expect(postService.search({ texto: 'a' }))
                 .rejects
                 .toThrow('O termo de busca é obrigatório e deve ter pelo menos 2 caracteres.');
         });
 
-        it('deve lançar AppError para query vazia', async () => { 
-            await expect(postService.search(''))
-                .rejects
-                .toThrow('O termo de busca é obrigatório e deve ter pelo menos 2 caracteres.');
-        });
+        it('deve permitir busca apenas com professor/disciplina sem texto', async () => {
+            const filters = { professor: 'João', disciplina: 'Matemática' };
+            const posts = [{ id: 1, titulo: 'Post', conteudo: 'Conteúdo', autor: 'João', disciplina: 'Matemática', dataCriacao: new Date() }];
+            (postRepositoryMock.search as jest.Mock).mockResolvedValue(posts);
 
-        it('deve lançar AppError com status 400 para query inválida', async () => { 
-            await expect(postService.search('a'))
-                .rejects
-                .toHaveProperty('statusCode', 400);
+            const result = await postService.search(filters);
+
+            expect(result.total).toBe(1);
+            expect(postRepositoryMock.search).toHaveBeenCalledWith(filters);
         });
     });
 });

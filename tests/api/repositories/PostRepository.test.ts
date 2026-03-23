@@ -42,9 +42,9 @@ describe('PostRepository', () => {
         it('deve retornar todos os posts', async () => {
             // Arrange: Cria dados no banco para o teste ler
             await PostModel.create([
-                { id: 1, titulo: 'Bem-vindo ao Diario', conteudo: 'Conteúdo 1', autor: 'A', dataCriacao: new Date() },
-                { id: 2, titulo: 'Segundo Post', conteudo: 'Conteúdo 2', autor: 'B', dataCriacao: new Date() },
-                { id: 3, titulo: 'Terceiro Post', conteudo: 'Conteúdo 3', autor: 'C', dataCriacao: new Date() }
+                { id: 1, titulo: 'Bem-vindo ao Diario', conteudo: 'Conteúdo 1', autor: 'A', disciplina: 'Matemática', dataCriacao: new Date() },
+                { id: 2, titulo: 'Segundo Post', conteudo: 'Conteúdo 2', autor: 'B', disciplina: 'História', dataCriacao: new Date() },
+                { id: 3, titulo: 'Terceiro Post', conteudo: 'Conteúdo 3', autor: 'C', disciplina: 'Geografia', dataCriacao: new Date() }
             ]);
 
             // Act
@@ -72,6 +72,7 @@ describe('PostRepository', () => {
                 titulo: 'Bem-vindo ao Diario',
                 conteudo: 'Conteúdo',
                 autor: 'Autor',
+                disciplina: 'Matemática',
                 dataCriacao: new Date()
             });
 
@@ -95,9 +96,9 @@ describe('PostRepository', () => {
         // Helper para criar massa de dados
         beforeEach(async () => {
             await PostModel.create([
-                { id: 1, titulo: 'Bem-vindo ao Diario', conteudo: 'Intro', autor: 'A', dataCriacao: new Date() },
-                { id: 2, titulo: 'Segundo Post', conteudo: 'Conteúdo sobre Node.js', autor: 'B', dataCriacao: new Date() },
-                { id: 3, titulo: 'Terceiro Post', conteudo: 'Express é incrível', autor: 'C', dataCriacao: new Date() }
+                { id: 1, titulo: 'Bem-vindo ao Diario', conteudo: 'Intro', autor: 'A', disciplina: 'Matemática', dataCriacao: new Date() },
+                { id: 2, titulo: 'Segundo Post', conteudo: 'Conteúdo sobre Node.js', autor: 'B', disciplina: 'Física', dataCriacao: new Date() },
+                { id: 3, titulo: 'Terceiro Post', conteudo: 'Express é incrível', autor: 'C', disciplina: 'Química', dataCriacao: new Date() }
             ]);
         });
 
@@ -133,7 +134,8 @@ describe('PostRepository', () => {
             const newPostData = {
                 titulo: 'Novo Post',
                 conteudo: 'Conteúdo do novo post com pelo menos 10 caracteres',
-                autor: 'Novo Autor'
+                autor: 'Novo Autor',
+                disciplina: 'Biologia'
             };
 
             const createdPost = await postRepository.create(newPostData);
@@ -158,6 +160,7 @@ describe('PostRepository', () => {
                 titulo: 'Original',
                 conteudo: 'Conteúdo Original',
                 autor: 'Autor Original',
+                disciplina: 'Matemática',
                 dataCriacao: new Date()
             });
         });
@@ -212,6 +215,7 @@ describe('PostRepository', () => {
                 titulo: 'Para Deletar',
                 conteudo: 'Conteúdo',
                 autor: 'Autor',
+                disciplina: 'Matemática',
                 dataCriacao: new Date()
             });
         });
@@ -238,12 +242,14 @@ describe('PostRepository', () => {
             const post1 = await postRepository.create({
                 titulo: 'Post 1',
                 conteudo: 'Conteúdo 1 com muitos caracteres',
-                autor: 'Autor 1'
+                autor: 'Autor 1',
+                disciplina: 'Matemática'
             });
             const post2 = await postRepository.create({
                 titulo: 'Post 2',
                 conteudo: 'Conteúdo 2 com muitos caracteres',
-                autor: 'Autor 2'
+                autor: 'Autor 2',
+                disciplina: 'História'
             });
 
             // 2. Atualiza um e deleta o outro

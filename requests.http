@@ -2,6 +2,104 @@
 @contentType = application/json
 
 # ==========================================
+# AUTH
+# ==========================================
+
+### Login Professor
+# @name loginProfessor
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "joao.silva@escola.edu.br",
+    "senha": "123456",
+    "role": "professor"
+}
+
+@professorToken = {{loginProfessor.response.body.token}}
+
+### Login Aluno
+# @name loginAluno
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "ana.souza@escola.edu.br",
+    "senha": "123456",
+    "role": "aluno"
+}
+
+@alunoToken = {{loginAluno.response.body.token}}
+
+# ==========================================
+# -1. CADASTRO DE ALUNOS
+# ==========================================
+
+### -1.1 Criar um novo Aluno
+# @name createAluno
+POST {{baseUrl}}/alunos
+Content-Type: {{contentType}}
+
+{
+    "nome": "Ana Souza",
+    "email": "ana.souza@escola.edu.br",
+    "turma": "7A",
+    "senha": "123456"
+}
+
+### -1.2 Buscar o aluno recém-criado
+@alunoId = {{createAluno.response.body.id}}
+GET {{baseUrl}}/alunos/{{alunoId}}
+
+### -1.3 Atualizar o aluno criado
+PUT {{baseUrl}}/alunos/{{alunoId}}
+Content-Type: {{contentType}}
+
+{
+    "turma": "8A"
+}
+
+### -1.4 Listar todos os alunos
+GET {{baseUrl}}/alunos
+
+### -1.5 Deletar o aluno criado
+DELETE {{baseUrl}}/alunos/{{alunoId}}
+
+# ==========================================
+# 0. CADASTRO DE PROFESSORES
+# ==========================================
+
+### 0.1 Criar um novo Professor
+# @name createProfessor
+POST {{baseUrl}}/professores
+Content-Type: {{contentType}}
+
+{
+    "nome": "Professor João da Silva",
+    "email": "joao.silva@escola.edu.br",
+    "disciplina": "Matemática",
+    "senha": "123456"
+}
+
+### 0.2 Buscar o professor recém-criado
+@professorId = {{createProfessor.response.body.id}}
+GET {{baseUrl}}/professores/{{professorId}}
+
+### 0.3 Atualizar o professor criado
+PUT {{baseUrl}}/professores/{{professorId}}
+Content-Type: {{contentType}}
+
+{
+    "disciplina": "Física"
+}
+
+### 0.4 Listar todos os professores
+GET {{baseUrl}}/professores
+
+### 0.5 Deletar o professor criado
+DELETE {{baseUrl}}/professores/{{professorId}}
+
+# ==========================================
 # 1. FLUXO DE CRIAÇÃO E MANIPULAÇÃO (CRUD)
 # ==========================================
 # Este fluxo cria um post e utiliza o ID retornado para as operações subsequentes.
@@ -11,11 +109,13 @@
 # @name createPost
 POST {{baseUrl}}/posts
 Content-Type: {{contentType}}
+Authorization: Bearer {{professorToken}}
 
 {
     "titulo": "Post de Teste Automatizado",
     "conteudo": "Este conteúdo serve para validar o fluxo de criação e recuperação de ID dinâmico.",
-    "autor": "QA Tester"
+    "autor": "Professor João da Silva",
+    "disciplina": "Matemática"
 }
 
 ### 1.2 Buscar o post recém-criado (Usa o ID do passo anterior)
@@ -25,6 +125,7 @@ GET {{baseUrl}}/posts/{{postId}}
 ### 1.3 Atualizar o post criado
 PUT {{baseUrl}}/posts/{{postId}}
 Content-Type: {{contentType}}
+Authorization: Bearer {{professorToken}}
 
 {
     "titulo": "Título Atualizado Dinamicamente",
@@ -36,6 +137,7 @@ GET {{baseUrl}}/posts/
 
 ### 1.5 Deletar o post criado
 DELETE {{baseUrl}}/posts/{{postId}}
+Authorization: Bearer {{professorToken}}
 
 ### 1.6 Confirmar exclusão (Deve retornar 404)
 GET {{baseUrl}}/posts/{{postId}}
@@ -49,21 +151,25 @@ GET {{baseUrl}}/posts/{{postId}}
 ### 2.1 Criar Post sobre Node.js
 POST {{baseUrl}}/posts
 Content-Type: {{contentType}}
+Authorization: Bearer {{professorToken}}
 
 {
     "titulo": "Introdução ao Node.js",
     "conteudo": "Node.js permite executar JavaScript no servidor com alta performance.",
-    "autor": "Professor Node"
+    "autor": "Professor Node",
+    "disciplina": "Física"
 }
 
 ### 2.2 Criar Post sobre Docker
 POST {{baseUrl}}/posts
 Content-Type: {{contentType}}
+Authorization: Bearer {{professorToken}}
 
 {
     "titulo": "Docker para Iniciantes",
     "conteudo": "Containerização facilita o deploy e garante consistência de ambiente.",
-    "autor": "Professor Docker"
+    "autor": "Professor Docker",
+    "disciplina": "Química"
 }
 
 ### 2.3 Listar todos os posts
@@ -89,16 +195,19 @@ GET {{baseUrl}}/posts/abc-123
 ### 3.3 Erro: Criar post com dados inválidos (Título curto)
 POST {{baseUrl}}/posts
 Content-Type: {{contentType}}
+Authorization: Bearer {{professorToken}}
 
 {
     "titulo": "Oi",
     "conteudo": "Conteúdo válido, mas o título é muito curto.",
-    "autor": "Tester"
+    "autor": "Tester",
+    "disciplina": "Artes"
 }
 
 ### 3.4 Erro: Atualizar post inexistente
 PUT {{baseUrl}}/posts/999999
 Content-Type: {{contentType}}
+Authorization: Bearer {{professorToken}}
 
 {
     "titulo": "Tentativa de Update"

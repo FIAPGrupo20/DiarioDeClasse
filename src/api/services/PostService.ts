@@ -1,6 +1,7 @@
 import { Post, IPost } from '../models/Post';
 import { PostRepository } from '../repositories/PostRepository';
 import { AppError } from '../../utils/AppError';
+import { DISCIPLINAS_ENSINO_MEDIO } from '../../constants/disciplinas';
 
 export class PostService {
     private postRepository: PostRepository;
@@ -31,6 +32,7 @@ export class PostService {
         this.validarTitulo(post.titulo);
         this.validarConteudo(post.conteudo);
         this.validarAutor(post.autor);
+        this.validarDisciplina(post.disciplina);
 
         // Aqui usamos a variável 'post' que veio do parâmetro, e não 'postData'
         return await this.postRepository.create(post);
@@ -54,12 +56,16 @@ export class PostService {
         if (data.autor !== undefined) {
             this.validarAutor(data.autor);
         }
+        if (data.disciplina !== undefined) {
+            this.validarDisciplina(data.disciplina);
+        }
 
         // Sanitização: Garante que apenas campos permitidos sejam enviados ao banco
         const updateData: any = {};
         if (data.titulo) updateData.titulo = data.titulo;
         if (data.conteudo) updateData.conteudo = data.conteudo;
         if (data.autor) updateData.autor = data.autor;
+        if (data.disciplina) updateData.disciplina = data.disciplina;
 
         const updatedPost = await this.postRepository.update(id, updateData);
         if (!updatedPost) {
@@ -76,12 +82,22 @@ export class PostService {
         }
     }
 
-    public async search(query: string): Promise<{ total: number; query: string; posts: Post[] }> {
-        this.validarQuery(query);
-        const posts = await this.postRepository.findByText(query);
+    public async search(filters: {
+        texto?: string;
+        professor?: string;
+        disciplina?: string;
+        orderBy?: 'titulo' | 'dataCriacao';
+        order?: 'asc' | 'desc';
+    } = {}): Promise<{ total: number; filters: typeof filters; posts: Post[] }> {
+        // Se houver texto, valida; caso contrário, é OK buscar apenas por filtros
+        if (filters.texto && filters.texto.trim()) {
+            this.validarQuery(filters.texto);
+        }
+
+        const posts = await this.postRepository.search(filters);
         return {
             total: posts.length,
-            query,
+            filters,
             posts
         };
     }
@@ -107,6 +123,17 @@ export class PostService {
     private validarAutor(autor: string | undefined) {
         if (!autor || autor.trim().length < 3) {
             throw new AppError('O autor é obrigatório e deve ter pelo menos 3 caracteres.', 422);
+        }
+    }
+
+    private validarDisciplina(disciplina: string | undefined) {
+        if (!disciplina) {
+            throw new AppError('A disciplina é obrigatória.', 422);
+        }
+
+        const disciplinaNormalizada = disciplina.trim();
+        if (!DISCIPLINAS_ENSINO_MEDIO.includes(disciplinaNormalizada as any)) {
+            throw new AppError('Disciplina inválida. Selecione uma disciplina válida do Ensino Médio.', 422);
         }
     }
 

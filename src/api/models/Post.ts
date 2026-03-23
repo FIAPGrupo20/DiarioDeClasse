@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { DISCIPLINAS_ENSINO_MEDIO } from '../../constants/disciplinas';
 
 /**
  * @swagger
@@ -10,6 +11,7 @@ import mongoose, { Schema, Document } from 'mongoose';
  *         - titulo
  *         - conteudo
  *         - autor
+ *         - disciplina
  *       properties:
  *         id:
  *           type: number
@@ -23,6 +25,22 @@ import mongoose, { Schema, Document } from 'mongoose';
  *         autor:
  *           type: string
  *           description: Nome do autor da postagem
+ *         disciplina:
+ *           type: string
+ *           description: Disciplina relacionada à postagem
+ *           enum:
+ *             - Língua Portuguesa
+ *             - Matemática
+ *             - Biologia
+ *             - Física
+ *             - Química
+ *             - História
+ *             - Geografia
+ *             - Filosofia
+ *             - Sociologia
+ *             - Língua Inglesa
+ *             - Educação Física
+ *             - Artes
  *         dataCriacao:
  *           type: string
  *           format: date-time
@@ -32,6 +50,7 @@ import mongoose, { Schema, Document } from 'mongoose';
  *         titulo: Introdução ao Swagger
  *         conteudo: O Swagger ajuda a documentar APIs de forma interativa.
  *         autor: Grupo 20
+ *         disciplina: Tecnologia
  *         dataCriacao: 2024-05-20T10:00:00.000Z
  */
 export interface IPost {
@@ -39,6 +58,7 @@ export interface IPost {
     titulo: string;
     conteudo: string;
     autor: string;
+    disciplina: string;
     dataCriacao: Date;
 }
 
@@ -49,6 +69,7 @@ const PostSchema: Schema = new Schema({
     titulo: { type: String, required: true },
     conteudo: { type: String, required: true },
     autor: { type: String, required: true },
+    disciplina: { type: String, required: true, enum: DISCIPLINAS_ENSINO_MEDIO },
     dataCriacao: { type: Date, default: Date.now }
 }, {
     toJSON: {

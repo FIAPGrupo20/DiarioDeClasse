@@ -15,8 +15,46 @@ export class PostRepository {
         const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const regex = new RegExp(escapedQuery, 'i');
         return await PostModel.find({
-            $or: [{ titulo: regex }, { conteudo: regex }]
+            $or: [{ titulo: regex }, { conteudo: regex }, { disciplina: regex }]
         });
+    }
+
+    public async search(filters: {
+        texto?: string;
+        professor?: string;
+        disciplina?: string;
+        orderBy?: 'titulo' | 'dataCriacao';
+        order?: 'asc' | 'desc';
+    } = {}): Promise<Post[]> {
+        const query: any = {};
+
+        // Filtro por texto (busca em título e conteúdo)
+        if (filters.texto && filters.texto.trim()) {
+            const escapedQuery = filters.texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escapedQuery, 'i');
+            query.$or = [
+                { titulo: regex },
+                { conteudo: regex }
+            ];
+        }
+
+        // Filtro por professor (autor)
+        if (filters.professor && filters.professor.trim()) {
+            const escapedProfessor = filters.professor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escapedProfessor, 'i');
+            query.autor = regex;
+        }
+
+        // Filtro por disciplina
+        if (filters.disciplina && filters.disciplina.trim()) {
+            query.disciplina = filters.disciplina.trim();
+        }
+
+        // Ordenação
+        const sortOrder = filters.order === 'asc' ? 1 : -1;
+        const sortField = filters.orderBy === 'titulo' ? 'titulo' : 'dataCriacao';
+
+        return await PostModel.find(query).sort({ [sortField]: sortOrder });
     }
 
     public async create(data: Omit<IPost, 'id' | 'dataCriacao'>): Promise<Post> {

@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { PostController } from '../api/controllers/PostController';
+import { authenticate } from '../middleware/authenticate';
+import { authorizeRoles } from '../middleware/authorizeRoles';
 
 const router = Router();
 const postController = new PostController();
@@ -41,18 +43,42 @@ router.get('/posts', postController.getAll);
  * @swagger
  * /posts/search:
  *   get:
- *     summary: Busca postagens por termo (título ou conteúdo)
+ *     summary: Busca e filtra postagens com opções avançadas
  *     tags: [Posts]
  *     parameters:
  *       - in: query
- *         name: q
+ *         name: texto
  *         schema:
  *           type: string
- *         required: true
- *         description: Termo de pesquisa
+ *         description: Busca em título e conteúdo (case-insensitive)
+ *       - in: query
+ *         name: professor
+ *         schema:
+ *           type: string
+ *         description: Filtro por nome do professor/autor (case-insensitive)
+ *       - in: query
+ *         name: disciplina
+ *         schema:
+ *           type: string
+ *           enum: [Língua Portuguesa, Matemática, Biologia, Física, Química, História, Geografia, Filosofia, Sociologia, Língua Inglesa, Educação Física, Artes]
+ *         description: Filtro por disciplina (caso sensível)
+ *       - in: query
+ *         name: orderBy
+ *         schema:
+ *           type: string
+ *           enum: [titulo, dataCriacao]
+ *           default: dataCriacao
+ *         description: Campo para ordenação
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Direção da ordenação
  *     responses:
  *       200:
- *         description: Resultados da busca
+ *         description: Resultados da busca filtrada
  *         content:
  *           application/json:
  *             schema:
@@ -63,14 +89,23 @@ router.get('/posts', postController.getAll);
  *                   example: success
  *                 total:
  *                   type: integer
- *                 query:
- *                   type: string
+ *                 filters:
+ *                   type: object
+ *                   properties:
+ *                     texto:
+ *                       type: string
+ *                     professor:
+ *                       type: string
+ *                     disciplina:
+ *                       type: string
+ *                     orderBy:
+ *                       type: string
+ *                     order:
+ *                       type: string
  *                 posts:
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Post'
- *       400:
- *         description: Termo de busca inválido
  */
 router.get('/posts/search', postController.search);
 
@@ -121,12 +156,15 @@ router.get('/posts/:id', postController.getById);
  *               - titulo
  *               - conteudo
  *               - autor
+ *               - disciplina
  *             properties:
  *               titulo:
  *                 type: string
  *               conteudo:
  *                 type: string
  *               autor:
+ *                 type: string
+ *               disciplina:
  *                 type: string
  *     responses:
  *       201:
@@ -144,7 +182,7 @@ router.get('/posts/:id', postController.getById);
  *       422:
  *         description: Erro de validação (campos obrigatórios ou inválidos)
  */
-router.post('/posts', postController.create);
+router.post('/posts', authenticate, authorizeRoles('professor'), postController.create);
 
 /**
  * @swagger
@@ -172,6 +210,8 @@ router.post('/posts', postController.create);
  *                 type: string
  *               autor:
  *                 type: string
+ *               disciplina:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Post atualizado com sucesso
@@ -188,7 +228,7 @@ router.post('/posts', postController.create);
  *       404:
  *         description: Post não encontrado
  */
-router.put('/posts/:id', postController.update);
+router.put('/posts/:id', authenticate, authorizeRoles('professor'), postController.update);
 
 /**
  * @swagger
@@ -217,6 +257,6 @@ router.put('/posts/:id', postController.update);
  *       404:
  *         description: Post não encontrado
  */
-router.delete('/posts/:id', postController.delete);
+router.delete('/posts/:id', authenticate, authorizeRoles('professor'), postController.delete);
 
 export { router };
